@@ -764,9 +764,18 @@ exports.viewStaticContent = catchAsyncError(async (req, res, next) => {
 });
 
 exports.updateStaticContent = catchAsyncError(async (req, res, next) => {
+  const { aboutUs, contactUsPhone, contactUsEmail, contactUsAddr } = req.body;
+
   const staticContent = await staticModel.findByIdAndUpdate(
     req.params.id,
-    req.body,
+    {
+      aboutUs,
+      contactUs: {
+        phone: contactUsPhone?.map((c) => c),
+        email: contactUsEmail?.map((c) => c),
+        address: contactUsAddr?.map((c) => c),
+      },
+    },
     { new: true, runValidators: true }
   );
 
