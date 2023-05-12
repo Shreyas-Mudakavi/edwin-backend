@@ -7,6 +7,7 @@ const {
   addStaticContent,
   getStaticContent,
   updateStaticContent,
+  viewStaticContent,
 } = require("../controllers/adminController");
 const {
   createCategory,
@@ -88,7 +89,8 @@ router.post("/image", upload.single("image"), postSingleImage);
 router.post("/multi-image", upload.array("image"), postMultipleImages);
 
 router.post("/add/static", auth, isAdmin, addStaticContent);
-router.get("/get/static/:id", auth, isAdmin, getStaticContent);
+router.get("/get/staticCont", auth, isAdmin, getStaticContent);
+router.get("/get/static/:id", auth, isAdmin, viewStaticContent);
 router.put("/update/static/:id", auth, isAdmin, updateStaticContent);
 
 module.exports = router;
