@@ -735,11 +735,15 @@ exports.getStatistics = catchAsyncError(async (req, res, next) => {
 });
 
 exports.addStaticContent = catchAsyncError(async (req, res, next) => {
-  const { aboutUs, phone, email, address } = req.body;
+  const { aboutUs, phone, email, address, contactUs } = req.body;
 
   const staticContent = await staticModel.create({
     aboutUs,
-    contactUs: { phone, email, address },
+    contactUs: {
+      phone: contactUs.phone,
+      email: contactUs.email,
+      address: contactUs.address,
+    },
   });
 
   const savedStaticContent = await staticContent.save();

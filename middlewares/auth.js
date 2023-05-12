@@ -1,6 +1,8 @@
 const jwt = require("jsonwebtoken");
 const userModel = require("../models/userModel");
 const ErrorHandler = require("../utils/errorHandler");
+const dotenv = require("dotenv");
+dotenv.config();
 
 exports.auth = async (req, res, next) => {
   try {
@@ -22,6 +24,7 @@ exports.auth = async (req, res, next) => {
 
     next();
   } catch (error) {
+    console.log(error);
     return res.status(401).send({ error: { message: `Unauthorized` } });
   }
 };
@@ -41,6 +44,7 @@ exports.isAdmin = async (req, res, next) => {
 
     next();
   } catch (error) {
+    console.log(error);
     return next(new ErrorHandler("Unauthorized.", 401));
   }
 };
