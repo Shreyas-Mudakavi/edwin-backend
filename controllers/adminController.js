@@ -9,6 +9,8 @@ const staticModel = require("../models/staticModel");
 const catchAsyncError = require("../utils/catchAsyncError");
 const ErrorHandler = require("../utils/errorHandler");
 const { s3Uploadv2, s3UploadMulti } = require("../utils/s3");
+const installerModel = require("../models/installersModel");
+import { v4 as uuidv4 } from "uuid";
 
 exports.postSingleImage = catchAsyncError(async (req, res, next) => {
   const file = req.file;
@@ -780,4 +782,61 @@ exports.updateStaticContent = catchAsyncError(async (req, res, next) => {
   );
 
   res.status(200).json(staticContent);
+});
+
+exports.addInstallers = catchAsyncError(async (req, res, next) => {
+  const { name, profilePic, location, zip } = req.body;
+
+  const unique_id = uuid();
+  const id = unique_id.slice(0, 6);
+
+  const installer = await installerModel.create({
+    ID: `Edwin - ${id}`,
+    name,
+    profilePic,
+    location,
+    zip,
+  });
+
+  const savedInstaller = await installer.save();
+
+  res.status(200).json(savedInstaller);
+});
+
+exports.getInstallers = catchAsyncError(async (req, res, next) => {
+  const installers = await installerModel.find();
+
+  if (!installers) {
+    return next(ErrorHandler("No installers found!", 404));
+  }
+
+  res.status(200).json(installers);
+});
+
+exports.getInstaller = catchAsyncError(async (req, res, next) => {
+  const installer = await installerModel.find({ _id: req.params.id });
+
+  if (!installer) {
+    return next(ErrorHandler("No installer found!", 404));
+  }
+
+  res.status(200).json(installer);
+});
+
+exports.updateInstaller = catchAsyncError(async (req, res, next) => {
+  const installer = await installerModel.findByIdAndUpdate(
+    req.params.id,
+    req.body,
+    { new: true, runValidators: true }
+  );
+
+  res.status(200).json(installer);
+});
+
+exports.deleteInstaller = catchAsyncError(async (req, res, next) => {
+  const installer = await installerModel.findById(req.params.id);
+
+  await installer.remove();
+
+  res.status(200).json({ msg: "Installer deleted!" });
 });

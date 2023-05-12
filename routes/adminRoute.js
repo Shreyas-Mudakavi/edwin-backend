@@ -8,6 +8,11 @@ const {
   getStaticContent,
   updateStaticContent,
   viewStaticContent,
+  addInstallers,
+  getInstallers,
+  getInstaller,
+  updateInstaller,
+  deleteInstaller,
 } = require("../controllers/adminController");
 const {
   createCategory,
@@ -101,5 +106,11 @@ router.put("/update/static/:id", auth, isAdmin, updateStaticContent);
 router.get("/getAll-quotes", auth, isAdmin, getQuotes);
 router.get("/get-quote/:id", auth, isAdmin, getQuote);
 router.delete("/delete-quote/:id", auth, isAdmin, deleteQuote);
+
+router.post("/add-installer", auth, isAdmin, addInstallers);
+router.get("/get-installers", auth, isAdmin, getInstallers);
+router.get("/get-installer/:id", auth, isAdmin, getInstaller);
+router.put("/update-installer/:id", auth, isAdmin, updateInstaller);
+router.delete("/delete-installer/:id", auth, isAdmin, deleteInstaller);
 
 module.exports = router;
