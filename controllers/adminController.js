@@ -735,14 +735,14 @@ exports.getStatistics = catchAsyncError(async (req, res, next) => {
 });
 
 exports.addStaticContent = catchAsyncError(async (req, res, next) => {
-  const { aboutUs, phone, email, address, contactUs } = req.body;
+  const { aboutUs, contactUs } = req.body;
 
   const staticContent = await staticModel.create({
     aboutUs,
     contactUs: {
-      phone: contactUs.phone,
-      email: contactUs.email,
-      address: contactUs.address,
+      phone: contactUs?.map((c) => c?.phone),
+      email: contactUs?.map((c) => c?.email),
+      address: contactUs?.map((c) => c?.address),
     },
   });
 
