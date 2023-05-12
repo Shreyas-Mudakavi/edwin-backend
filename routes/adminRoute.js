@@ -45,6 +45,11 @@ const {
 } = require("../controllers/userController");
 const { auth, isAdmin } = require("../middlewares/auth");
 const { s3Uploadv2, upload, s3UploadMulti } = require("../utils/s3");
+const {
+  getQuotes,
+  getQuote,
+  deleteQuote,
+} = require("../controllers/quoteController");
 const router = express.Router();
 
 router.get("/all", getAll);
@@ -92,5 +97,9 @@ router.post("/add/static", auth, isAdmin, addStaticContent);
 router.get("/get/staticCont", auth, isAdmin, getStaticContent);
 router.get("/get/static/:id", auth, isAdmin, viewStaticContent);
 router.put("/update/static/:id", auth, isAdmin, updateStaticContent);
+
+router.get("/getAll-quotes", auth, isAdmin, getQuotes);
+router.get("/get-quote/:id", auth, isAdmin, getQuote);
+router.delete("/delete-quote/:id", auth, isAdmin, deleteQuote);
 
 module.exports = router;

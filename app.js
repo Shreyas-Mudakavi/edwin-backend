@@ -26,6 +26,7 @@ const adminRoute = require("./routes/adminRoute");
 const promotionRoute = require("./routes/promotionRoute");
 const reviewRoute = require("./routes/reviewRoute");
 const staticRoute = require("./routes/staticRoute");
+const quoteRoute = require("./routes/quoteRoute");
 
 app.use("/api/user", userRoute);
 app.use("/api/product", productRoute);
@@ -36,6 +37,7 @@ app.use("/api/admin", adminRoute);
 app.use("/api/promotion", promotionRoute);
 app.use("/api/review", reviewRoute);
 app.use("/api/static", staticRoute);
+app.use("/api/quote", quoteRoute);
 
 app.all("*", async (req, res) => {
   res.status(404).json({
