@@ -4,6 +4,9 @@ const {
   getAll,
   postSingleImage,
   postMultipleImages,
+  addStaticContent,
+  getStaticContent,
+  updateStaticContent,
 } = require("../controllers/adminController");
 const {
   createCategory,
@@ -66,8 +69,6 @@ router
   .put(auth, isAdmin, updateCategory)
   .delete(auth, isAdmin, deleteCategory);
 
-
-
 router.post("/product/create", auth, isAdmin, createProduct);
 router
   .route("/product/:id")
@@ -85,5 +86,9 @@ router
 
 router.post("/image", upload.single("image"), postSingleImage);
 router.post("/multi-image", upload.array("image"), postMultipleImages);
+
+router.post("/add/static", auth, isAdmin, addStaticContent);
+router.get("/get/static", auth, isAdmin, getStaticContent);
+router.put("/update/static/:id", auth, isAdmin, updateStaticContent);
 
 module.exports = router;

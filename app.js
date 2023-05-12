@@ -23,8 +23,9 @@ const categoryRoute = require("./routes/categoryRoute");
 const cartRoute = require("./routes/cartRoute");
 const orderRoute = require("./routes/orderRoute");
 const adminRoute = require("./routes/adminRoute");
-const promotionRoute = require('./routes/promotionRoute');
-const reviewRoute = require('./routes/reviewRoute');
+const promotionRoute = require("./routes/promotionRoute");
+const reviewRoute = require("./routes/reviewRoute");
+const staticRoute = require("./routes/staticRoute");
 
 app.use("/api/user", userRoute);
 app.use("/api/product", productRoute);
@@ -34,9 +35,14 @@ app.use("/api/order", orderRoute);
 app.use("/api/admin", adminRoute);
 app.use("/api/promotion", promotionRoute);
 app.use("/api/review", reviewRoute);
+app.use("/api/static", staticRoute);
 
-app.all('*', async (req, res) => {
-  res.status(404).json({error:{message:"Not Found. Kindly Check the API path as well as request type"}})
+app.all("*", async (req, res) => {
+  res.status(404).json({
+    error: {
+      message: "Not Found. Kindly Check the API path as well as request type",
+    },
+  });
 });
 app.use(errorMiddleware);
 

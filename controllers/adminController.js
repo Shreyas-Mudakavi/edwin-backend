@@ -5,6 +5,7 @@ const {
   productModel,
 } = require("../models/productModel");
 const userModel = require("../models/userModel");
+const staticModel = require("../models/staticModel");
 const catchAsyncError = require("../utils/catchAsyncError");
 const ErrorHandler = require("../utils/errorHandler");
 const { s3Uploadv2, s3UploadMulti } = require("../utils/s3");
@@ -731,4 +732,33 @@ exports.getStatistics = catchAsyncError(async (req, res, next) => {
       dailyPayments,
     });
   }
+});
+
+exports.addStaticContent = catchAsyncError(async (req, res, next) => {
+  const { aboutUs, phone, email, address } = req.body;
+
+  const staticContent = await staticModel.create({
+    aboutUs,
+    contactUs: { phone, email, address },
+  });
+
+  const savedStaticContent = await staticContent.save();
+
+  res.status(200).json(savedStaticContent);
+});
+
+exports.getStaticContent = catchAsyncError(async (req, res, next) => {
+  const staticContent = await staticModel.find();
+
+  res.status(200).json(staticContent);
+});
+
+exports.updateStaticContent = catchAsyncError(async (req, res, next) => {
+  const staticContent = await staticModel.findByIdAndUpdate(
+    req.params.id,
+    req.body,
+    { new: true, runValidators: true }
+  );
+
+  res.status(200).json(staticContent);
 });
