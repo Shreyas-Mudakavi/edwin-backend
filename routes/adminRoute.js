@@ -88,7 +88,7 @@ router.post("/image", upload.single("image"), postSingleImage);
 router.post("/multi-image", upload.array("image"), postMultipleImages);
 
 router.post("/add/static", auth, isAdmin, addStaticContent);
-router.get("/get/static", auth, isAdmin, getStaticContent);
+router.get("/get/static/:id", auth, isAdmin, getStaticContent);
 router.put("/update/static/:id", auth, isAdmin, updateStaticContent);
 
 module.exports = router;

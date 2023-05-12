@@ -748,7 +748,7 @@ exports.addStaticContent = catchAsyncError(async (req, res, next) => {
 });
 
 exports.getStaticContent = catchAsyncError(async (req, res, next) => {
-  const staticContent = await staticModel.find();
+  const staticContent = await staticModel.find(req.params.id);
 
   res.status(200).json(staticContent);
 });
