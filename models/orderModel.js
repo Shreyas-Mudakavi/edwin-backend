@@ -41,13 +41,17 @@ const orderSchema = new Schema(
       mobile_no: {
         type: Number,
         required: true,
-      }
+      },
     },
     status: {
       type: String,
       default: "pending",
       enum: ["pending", "paid", "delivered"],
-    }
+    },
+    orderId: {
+      type: String,
+      required: true,
+    },
   },
   {
     timestamps: true,

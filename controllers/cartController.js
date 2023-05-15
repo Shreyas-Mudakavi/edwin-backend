@@ -7,6 +7,7 @@ const { productModel } = require("../models/productModel");
 exports.addItem = catchAsyncError(async (req, res, next) => {
   console.log("cart add", req.body);
   const { product, quantity, installDate } = req.body;
+  console.log("cart date ", installDate);
 
   const isProduct = await productModel.findById(product);
   if (!isProduct) return next(new ErrorHandler("Product not found", 404));
