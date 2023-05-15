@@ -844,15 +844,17 @@ exports.deleteInstaller = catchAsyncError(async (req, res, next) => {
 });
 
 exports.addIntermediary = catchAsyncError(async (req, res, next) => {
-  const { name, mobile_no, email, password } = req.body;
+  const { firstname, lastname, mobile_no, email, password } = req.body;
 
   const encryptPw = await bcrypt.hash(password, 11);
 
-  const intermediary = await intermediariesModel.create({
-    name,
-    mobile_no,
+  const intermediary = await userModel.create({
     email,
     password: encryptPw,
+    firstname,
+    lastname,
+    mobile_no,
+    role: "intermediary",
   });
 
   const savedintermediary = await intermediary.save();
@@ -861,7 +863,7 @@ exports.addIntermediary = catchAsyncError(async (req, res, next) => {
 });
 
 exports.getAllIntermediaries = catchAsyncError(async (req, res, next) => {
-  const intermediaries = await intermediariesModel.find();
+  const intermediaries = await userModel.find({ role: "intermediary" });
 
   if (!intermediaries) {
     return next(ErrorHandler("No intermediaries found!", 404));
@@ -871,7 +873,10 @@ exports.getAllIntermediaries = catchAsyncError(async (req, res, next) => {
 });
 
 exports.getIntermediary = catchAsyncError(async (req, res, next) => {
-  const intermediary = await intermediariesModel.find({ _id: req.params.id });
+  const intermediary = await userModel.find({
+    _id: req.params.id,
+    role: "intermediary",
+  });
 
   if (!intermediary) {
     return next(ErrorHandler("No intermediary found!", 404));
@@ -881,7 +886,7 @@ exports.getIntermediary = catchAsyncError(async (req, res, next) => {
 });
 
 exports.updateIntermediary = catchAsyncError(async (req, res, next) => {
-  const intermediary = await intermediariesModel.findByIdAndUpdate(
+  const intermediary = await userModel.findByIdAndUpdate(
     req.params.id,
     req.body,
     { new: true, runValidators: true }
@@ -891,7 +896,13 @@ exports.updateIntermediary = catchAsyncError(async (req, res, next) => {
 });
 
 exports.deleteIntermediary = catchAsyncError(async (req, res, next) => {
-  const intermediary = await intermediariesModel.findById(req.params.id);
+  const intermediary = await userModel.findById(req.params.id);
+
+  const cart = await cartModel.findOne({ user: intermediary?._id });
+  await cart.remove();
+  await orderModel.deleteMany({ userId: req.params.id });
+  await addressModel.deleteMany({ user: req.params.id });
+  await reviewModel.deleteMany({ user: req.params.id });
 
   await intermediary.remove();
 

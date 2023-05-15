@@ -40,7 +40,7 @@ const userSchema = new mongoose.Schema(
     role: {
       type: String,
       default: "user",
-      enum: ["user", "admin"],
+      enum: ["user", "admin", "intermediary"],
     },
   },
   { timestamps: true }
@@ -51,8 +51,6 @@ userSchema.pre("save", async function (next) {
 
   this.password = await bcrypt.hash(this.password, 11);
 });
-
-
 
 userSchema.methods.comparePassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
@@ -65,4 +63,3 @@ userSchema.methods.getJWTToken = function () {
 };
 
 module.exports = mongoose.model("User", userSchema);
-
