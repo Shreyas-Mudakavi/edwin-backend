@@ -52,6 +52,11 @@ const orderSchema = new Schema(
       type: String,
       required: true,
     },
+    mode: {
+      type: String,
+      enum: ["stripe", "paypal", "other"],
+      default: "stripe",
+    },
   },
   {
     timestamps: true,

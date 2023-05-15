@@ -11,6 +11,8 @@ const ErrorHandler = require("../utils/errorHandler");
 const { s3Uploadv2, s3UploadMulti } = require("../utils/s3");
 const installerModel = require("../models/installersModel");
 const { v4: uuidv4 } = require("uuid");
+const intermediariesModel = require("../models/intermediariesModel");
+const bcrypt = require("bcryptjs");
 
 exports.postSingleImage = catchAsyncError(async (req, res, next) => {
   const file = req.file;
@@ -839,4 +841,59 @@ exports.deleteInstaller = catchAsyncError(async (req, res, next) => {
   await installer.remove();
 
   res.status(200).json({ msg: "Installer deleted!" });
+});
+
+exports.addIntermediary = catchAsyncError(async (req, res, next) => {
+  const { name, mobile_no, email, password } = req.body;
+
+  const encryptPw = await bcrypt.hash(password, 11);
+
+  const intermediary = await intermediariesModel.create({
+    name,
+    mobile_no,
+    email,
+    password: encryptPw,
+  });
+
+  const savedintermediary = await intermediary.save();
+
+  res.status(200).json(savedintermediary);
+});
+
+exports.getAllIntermediaries = catchAsyncError(async (req, res, next) => {
+  const intermediaries = await intermediariesModel.find();
+
+  if (!intermediaries) {
+    return next(ErrorHandler("No intermediaries found!", 404));
+  }
+
+  res.status(200).json(intermediaries);
+});
+
+exports.getIntermediary = catchAsyncError(async (req, res, next) => {
+  const intermediary = await intermediariesModel.find({ _id: req.params.id });
+
+  if (!intermediary) {
+    return next(ErrorHandler("No intermediary found!", 404));
+  }
+
+  res.status(200).json(intermediary);
+});
+
+exports.updateIntermediary = catchAsyncError(async (req, res, next) => {
+  const intermediary = await intermediariesModel.findByIdAndUpdate(
+    req.params.id,
+    req.body,
+    { new: true, runValidators: true }
+  );
+
+  res.status(200).json(intermediary);
+});
+
+exports.deleteIntermediary = catchAsyncError(async (req, res, next) => {
+  const intermediary = await intermediariesModel.findById(req.params.id);
+
+  await intermediary.remove();
+
+  res.status(200).json({ msg: "Intermediary deleted!" });
 });

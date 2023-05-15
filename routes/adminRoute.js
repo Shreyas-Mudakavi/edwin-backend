@@ -13,6 +13,11 @@ const {
   getInstaller,
   updateInstaller,
   deleteInstaller,
+  addIntermediary,
+  getAllIntermediaries,
+  getIntermediary,
+  updateIntermediary,
+  deleteIntermediary,
 } = require("../controllers/adminController");
 const {
   createCategory,
@@ -112,5 +117,11 @@ router.get("/get-installers", auth, isAdmin, getInstallers);
 router.get("/get-installer/:id", auth, isAdmin, getInstaller);
 router.put("/update-installer/:id", auth, isAdmin, updateInstaller);
 router.delete("/delete-installer/:id", auth, isAdmin, deleteInstaller);
+
+router.post("/add-intermediary", auth, isAdmin, addIntermediary);
+router.get("/get-intermediaries", auth, isAdmin, getAllIntermediaries);
+router.get("/get-intermediary/:id", auth, isAdmin, getIntermediary);
+router.put("/update-intermediary/:id", auth, isAdmin, updateIntermediary);
+router.delete("/delete-intermediary/:id", auth, isAdmin, deleteIntermediary);
 
 module.exports = router;
