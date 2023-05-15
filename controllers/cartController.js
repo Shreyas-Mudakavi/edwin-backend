@@ -18,6 +18,16 @@ exports.addItem = catchAsyncError(async (req, res, next) => {
     cart?.items.filter((item) => item.product.toString() === product).length ===
     0;
 
+  if (isProduct) {
+    await productModel.findByIdAndUpdate(
+      product,
+      {
+        installDate: new Date(installDate),
+      },
+      { new: true }
+    );
+  }
+
   // console.log(isExist);
   if (isExist) {
     cart?.items.push({ product, quantity });
@@ -26,9 +36,9 @@ exports.addItem = catchAsyncError(async (req, res, next) => {
       .map((item) => item.product.toString())
       .indexOf(product);
 
-    console.log(index, cart.items[index]);
+    console.log(index, cart.items[index].product.installDate);
+    cart.items[index].product.installDate = installDate;
     cart.items[index].quantity = quantity;
-    cart.installDate = installDate;
   }
 
   await (await cart.save()).populate("items.product");

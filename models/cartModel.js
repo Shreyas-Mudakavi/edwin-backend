@@ -17,9 +17,6 @@ const cartSchema = new mongoose.Schema(
         },
       },
     ],
-    installDate: {
-      type: Date,
-    },
   },
   { timestamps: true }
 );

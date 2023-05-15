@@ -19,7 +19,6 @@ const categorySchema = new mongoose.Schema(
 );
 const categoryModel = mongoose.model("Category", categorySchema);
 
-
 const productSchema = new mongoose.Schema(
   {
     name: {
@@ -43,16 +42,19 @@ const productSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
-    warranty:{
+    warranty: {
       type: Number,
       default: 0,
-
     },
     category: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Category",
       required: [true, "Please provide belonging category."],
-    }
+    },
+    installDate: {
+      type: Date,
+      default: new Date(),
+    },
   },
   { timestamps: true }
 );
