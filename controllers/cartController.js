@@ -6,12 +6,11 @@ const { productModel } = require("../models/productModel");
 
 exports.addItem = catchAsyncError(async (req, res, next) => {
   console.log("cart add", req.body);
-  const { product, quantity } = req.body;
+  const { product, quantity, installDate } = req.body;
 
   const isProduct = await productModel.findById(product);
-  if(!isProduct) 
-    return next(new ErrorHandler("Product not found", 404));
-  
+  if (!isProduct) return next(new ErrorHandler("Product not found", 404));
+
   const cart = await cartModel.findOne({ user: req.userId });
 
   const isExist =
@@ -28,6 +27,7 @@ exports.addItem = catchAsyncError(async (req, res, next) => {
 
     console.log(index, cart.items[index]);
     cart.items[index].quantity = quantity;
+    cart.installDate = installDate;
   }
 
   await (await cart.save()).populate("items.product");
@@ -42,6 +42,7 @@ exports.addItem = catchAsyncError(async (req, res, next) => {
   res.status(200).json({
     cartItems: cart.items,
     total,
+    installDate: cart.installDate,
   });
 });
 
