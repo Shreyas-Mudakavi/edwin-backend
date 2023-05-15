@@ -11,7 +11,6 @@ const ErrorHandler = require("../utils/errorHandler");
 const { s3Uploadv2, s3UploadMulti } = require("../utils/s3");
 const installerModel = require("../models/installersModel");
 const { v4: uuidv4 } = require("uuid");
-const intermediariesModel = require("../models/intermediariesModel");
 const bcrypt = require("bcryptjs");
 
 exports.postSingleImage = catchAsyncError(async (req, res, next) => {
