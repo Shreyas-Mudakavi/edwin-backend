@@ -10,7 +10,7 @@ const catchAsyncError = require("../utils/catchAsyncError");
 const ErrorHandler = require("../utils/errorHandler");
 const { s3Uploadv2, s3UploadMulti } = require("../utils/s3");
 const installerModel = require("../models/installersModel");
-import { v4 as uuidv4 } from "uuid";
+const { v4: uuidv4 } = require("uuid");
 
 exports.postSingleImage = catchAsyncError(async (req, res, next) => {
   const file = req.file;
