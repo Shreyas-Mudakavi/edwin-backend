@@ -5,6 +5,7 @@ const APIFeatures = require("../utils/apiFeatures");
 const catchAsyncError = require("../utils/catchAsyncError");
 const installerModel = require("../models/installersModel");
 const addressModel = require("../models/addressModel");
+const orderModel = require("../models/orderModel");
 
 exports.createProduct = catchAsyncError(async (req, res, next) => {
   const product = await await (
@@ -98,15 +99,43 @@ exports.updateProduct = catchAsyncError(async (req, res, next) => {
 });
 
 exports.updateProductInstallDate = catchAsyncError(async (req, res, next) => {
-  const product = await productModel
-    .updateOne(
+  await productModel
+    .updateMany(
       { _id: req.params.id },
       {
-        $set: { assignedInstallationDate: req.body },
+        $set: { assignedInstallationDate: req.body.date },
       }
     )
     .populate("category");
-  res.status(200).json({ product });
+
+  const orderProds = await orderModel.findById(req.body.id);
+
+  const prods = await orderProds.products
+    .filter((prod) => prod.product?._id.toString() === req.params.id)
+    .map((prod) => {
+      return {
+        ...prod?.product,
+        assignedInstallationDate: new Date(req.body.date),
+      };
+    });
+
+  await orderProds.products
+    .filter((prod) => prod.product?._id.toString() === req.params.id)
+    .push(prods[0]);
+
+  // console.log(
+  //   "order prods ",
+  //   orderProds.products
+  //     .filter((prod) => prod.product?._id.toString() === req.params.id)
+  //     .map((prod) => {
+  //       return {
+  //         ...prod?.product,
+  //         assignedInstallationDate: new Date(req.body.date),
+  //       };
+  //     })
+  // );
+
+  res.status(200).json({ msg: "Date assigned!" });
 });
 
 exports.deleteProduct = catchAsyncError(async (req, res, next) => {
