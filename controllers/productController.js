@@ -99,14 +99,14 @@ exports.updateProduct = catchAsyncError(async (req, res, next) => {
 });
 
 exports.updateProductInstallDate = catchAsyncError(async (req, res, next) => {
-  await productModel
-    .updateMany(
-      { _id: req.params.id },
-      {
-        $set: { assignedInstallationDate: req.body.date },
-      }
-    )
-    .populate("category");
+  // await productModel
+  //   .updateMany(
+  //     { _id: req.params.id },
+  //     {
+  //       $set: { assignedInstallationDate: req.body.date },
+  //     }
+  //   )
+  //   .populate("category");
 
   const orderProds = await orderModel.findById(req.body.id);
 

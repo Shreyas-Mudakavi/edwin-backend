@@ -55,9 +55,6 @@ const productSchema = new mongoose.Schema(
       type: Date,
       default: new Date(),
     },
-    assignedInstallationDate: {
-      type: Date,
-    },
   },
   { timestamps: true }
 );
