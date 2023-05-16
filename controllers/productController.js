@@ -3,11 +3,13 @@ const { productModel, categoryModel } = require("../models/productModel");
 const reviewModel = require("../models/reviewModel");
 const APIFeatures = require("../utils/apiFeatures");
 const catchAsyncError = require("../utils/catchAsyncError");
+const installerModel = require("../models/installersModel");
+const addressModel = require("../models/addressModel");
 
 exports.createProduct = catchAsyncError(async (req, res, next) => {
-  const product = await (
-    await (await productModel.create(req.body)).populate("category")
-  )
+  const product = await await (
+    await productModel.create(req.body)
+  ).populate("category");
   res.status(200).json({ product });
 });
 
@@ -16,9 +18,9 @@ exports.getAllProducts = catchAsyncError(async (req, res, next) => {
   const productCount = await productModel.countDocuments();
   console.log("productCount", productCount);
   const apiFeature = new APIFeatures(
-    productModel.find().populate("category").sort({createdAt: -1}),
+    productModel.find().populate("category").sort({ createdAt: -1 }),
     req.query
-  ).search('name');
+  ).search("name");
 
   let products = await apiFeature.query;
   console.log("products", products);
@@ -39,7 +41,34 @@ exports.getProduct = catchAsyncError(async (req, res, next) => {
   const product = await productModel
     .findById(req.params.id)
     .populate("category");
+
   res.status(200).json({ product });
+});
+
+exports.getProductInfo = catchAsyncError(async (req, res, next) => {
+  const product = await productModel
+    .findById(req.params.id)
+    .populate("category");
+
+  console.log(req.userId);
+
+  const address = await addressModel.find({
+    user: req.userId,
+    defaultAddress: true,
+  });
+
+  console.log("user addr ", address);
+
+  const userZipCode = await address[0]?.post_code;
+  console.log("user zip ", [userZipCode]);
+
+  const installers = await installerModel.find({
+    zip: { $regex: userZipCode },
+  });
+
+  console.log("install ", installers);
+
+  res.status(200).json({ product, installers });
 });
 
 exports.getRecentProducts = catchAsyncError(async (req, res, next) => {
@@ -52,9 +81,9 @@ exports.getRecentProducts = catchAsyncError(async (req, res, next) => {
 
   console.log("prods ", products.category?._id.toString());
 
-  const recentProducts = await productModel
-    .find({ category: products.category?._id.toString() })
-  
+  const recentProducts = await productModel.find({
+    category: products.category?._id.toString(),
+  });
 
   res.status(200).json({ recentProducts });
 });
@@ -77,7 +106,7 @@ exports.deleteProduct = catchAsyncError(async (req, res, next) => {
     return res.status(404).json({ message: "Product Not Found" });
   }
 
-  await reviewModel.deleteMany({product});
+  await reviewModel.deleteMany({ product });
   await product.remove();
 
   res.status(200).json({

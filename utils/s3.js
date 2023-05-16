@@ -1,5 +1,7 @@
 const S3 = require("aws-sdk/clients/s3");
 const multer = require("multer");
+const dotenv = require("dotenv");
+dotenv.config();
 
 exports.s3Uploadv2 = async (file) => {
   const s3 = new S3({
@@ -43,9 +45,9 @@ const fileFilter = (req, file, cb) => {
   if (file.mimetype.split("/")[0] === "image") {
     req.video_file = false;
     cb(null, true);
-//   } else if (file.mimetype.split("/")[0] === "video") {
-//     req.video_file = true;
-//     cb(null, true);
+    //   } else if (file.mimetype.split("/")[0] === "video") {
+    //     req.video_file = true;
+    //     cb(null, true);
   } else {
     cb(new multer.MulterError("LIMIT_UNEXPECTED_FILE"), false);
   }
