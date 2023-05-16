@@ -66,7 +66,7 @@ exports.getProductInfo = catchAsyncError(async (req, res, next) => {
     zip: { $gte: zipCode },
   });
 
-  res.status(200).json({ product, installers });
+  res.status(200).json({ product, installers, userZipCode });
 });
 
 exports.getRecentProducts = catchAsyncError(async (req, res, next) => {
