@@ -34,6 +34,7 @@ const {
   createProduct,
   updateProduct,
   deleteProduct,
+  updateProductInstallDate,
 } = require("../controllers/productController");
 const {
   createPromotion,
@@ -86,6 +87,7 @@ router
   .delete(auth, isAdmin, deleteCategory);
 
 router.post("/product/create", auth, isAdmin, createProduct);
+router.put("/update-productDate/:id", auth, isAdmin, updateProductInstallDate);
 router
   .route("/product/:id")
   .put(auth, isAdmin, updateProduct)

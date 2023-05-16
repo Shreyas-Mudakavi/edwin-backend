@@ -97,6 +97,18 @@ exports.updateProduct = catchAsyncError(async (req, res, next) => {
   res.status(200).json({ product });
 });
 
+exports.updateProductInstallDate = catchAsyncError(async (req, res, next) => {
+  const product = await productModel
+    .updateOne(
+      { _id: req.params.id },
+      {
+        $set: { assignedInstallationDate: req.body },
+      }
+    )
+    .populate("category");
+  res.status(200).json({ product });
+});
+
 exports.deleteProduct = catchAsyncError(async (req, res, next) => {
   let product = await productModel.findById(req.params.id);
 
