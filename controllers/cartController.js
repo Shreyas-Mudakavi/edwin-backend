@@ -18,15 +18,15 @@ exports.addItem = catchAsyncError(async (req, res, next) => {
     cart?.items.filter((item) => item.product.toString() === product).length ===
     0;
 
-  if (isProduct) {
-    await productModel.findByIdAndUpdate(
-      product,
-      {
-        installDate: new Date(installDate),
-      },
-      { new: true }
-    );
-  }
+  // if (isProduct) {
+  //   await productModel.findByIdAndUpdate(
+  //     product,
+  //     {
+  //       installDate: new Date(installDate),
+  //     },
+  //     { new: true }
+  //   );
+  // }
 
   // console.log(isExist);
   if (isExist) {
@@ -37,7 +37,7 @@ exports.addItem = catchAsyncError(async (req, res, next) => {
       .indexOf(product);
 
     console.log(index, cart.items[index].product.installDate);
-    cart.items[index].product.installDate = installDate;
+    cart.items[index].installationDate = new Date(installDate);
     cart.items[index].quantity = quantity;
   }
 

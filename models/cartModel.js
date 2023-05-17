@@ -15,6 +15,9 @@ const cartSchema = new mongoose.Schema(
         quantity: {
           type: Number,
         },
+        installationDate: {
+          type: Date,
+        },
       },
     ],
   },
