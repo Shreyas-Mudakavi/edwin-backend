@@ -13,14 +13,16 @@ exports.createOrder = async (req, res, next) => {
     .findOne({ user: userId })
     .populate("items.product");
 
-  
-  if(cart.length <= 0) 
-    return next(new ErrorHandler("Order can't placed. Add product to cart.", 401));
-  
+  if (cart.length <= 0)
+    return next(
+      new ErrorHandler("Order can't placed. Add product to cart.", 401)
+    );
+
   const products = cart?.items?.map((i) => {
     return {
       quantity: i?.quantity,
       product: { ...i?.product?._doc },
+      installDate: i?.installationDate,
     };
   });
 
@@ -37,18 +39,24 @@ exports.createOrder = async (req, res, next) => {
   const orderId = unique_id.slice(0, 6);
 
   console.log("orderId ", orderId);
-  console.log('order create', req.body);
-  
-  if(coupon_code) {
-    const coupon = await couponModel.findOne({user: userId, _id: coupon_code});
-    console.log("coupon", coupon);
-    console.log({now: Date.now(), createdAt: coupon.createdAt, diff: Date.now() - coupon.createdAt})
+  console.log("order create", req.body);
 
-    if(Date.now() - coupon.createdAt <= 30*60*60*1000) {
+  if (coupon_code) {
+    const coupon = await couponModel.findOne({
+      user: userId,
+      _id: coupon_code,
+    });
+    console.log("coupon", coupon);
+    console.log({
+      now: Date.now(),
+      createdAt: coupon.createdAt,
+      diff: Date.now() - coupon.createdAt,
+    });
+
+    if (Date.now() - coupon.createdAt <= 30 * 60 * 60 * 1000) {
       total -= coupon.amount;
       await coupon.remove();
-    }
-    else return next(new ErrorHandler("Coupon is expired.", 401));
+    } else return next(new ErrorHandler("Coupon is expired.", 401));
   }
 
   const newOrder = new Order({
@@ -60,9 +68,9 @@ exports.createOrder = async (req, res, next) => {
       post_code,
       street,
       town,
-      mobile_no
+      mobile_no,
     },
-    orderId: '#'+orderId,
+    orderId: "#" + orderId,
   });
 
   try {
@@ -105,7 +113,10 @@ exports.getAll = async (req, res, next) => {
     let query = { userId: req.userId };
     if (req.query.status !== "all") query.status = req.query.status;
 
-    const apiFeature = new APIFeatures(Order.find(query).sort({createdAt: -1}), req.query);
+    const apiFeature = new APIFeatures(
+      Order.find(query).sort({ createdAt: -1 }),
+      req.query
+    );
 
     const orders = await apiFeature.query;
     // const orders = await Order.find({ userId: req.userId });
@@ -136,7 +147,9 @@ exports.deleteOrder = catchAsyncError(async (req, res, next) => {
 exports.getOrderById = catchAsyncError(async (req, res, next) => {
   const { id } = req.params;
   console.log("get order", id);
-  const order = await Order.findById(id).sort({createdAt: -1}).populate("userId");
+  const order = await Order.findById(id)
+    .sort({ createdAt: -1 })
+    .populate("userId");
 
   if (!order) return next(new ErrorHandler("Order not found.", 404));
 
@@ -166,12 +179,12 @@ exports.getAllOrders = catchAsyncError(async (req, res, next) => {
       },
     };
   }
-  
+
   if (req.query.status !== "all") query.status = req.query.status;
 
   console.log("query", query);
   const apiFeature = new APIFeatures(
-    Order.find(query).sort({createdAt: -1}).populate("userId"),
+    Order.find(query).sort({ createdAt: -1 }).populate("userId"),
     req.query
   );
 

@@ -15,6 +15,10 @@ const orderSchema = new Schema(
           type: Number,
           default: 1,
         },
+        installDate: {
+          type: Date,
+          default: null,
+        },
         assignedInstallationDate: {
           type: Date,
           default: null,

@@ -51,14 +51,6 @@ const productSchema = new mongoose.Schema(
       ref: "Category",
       required: [true, "Please provide belonging category."],
     },
-    installDate: {
-      type: Date,
-      default: null,
-    },
-    assignedInstallationDate: {
-      type: Date,
-      default: null,
-    },
   },
   { timestamps: true }
 );
