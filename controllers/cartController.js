@@ -36,7 +36,6 @@ exports.addItem = catchAsyncError(async (req, res, next) => {
       .map((item) => item.product.toString())
       .indexOf(product);
 
-    console.log(index, cart.items[index].product.installDate);
     cart.items[index].installationDate = new Date(installDate);
     cart.items[index].quantity = quantity;
   }
