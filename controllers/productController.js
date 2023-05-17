@@ -99,40 +99,37 @@ exports.updateProduct = catchAsyncError(async (req, res, next) => {
 });
 
 exports.updateProductInstallDate = catchAsyncError(async (req, res, next) => {
-  // await productModel
-  //   .updateMany(
-  //     { _id: req.params.id },
-  //     {
-  //       $set: { assignedInstallationDate: req.body.date },
-  //     }
-  //   )
-  //   .populate("category");
+  const currOrder = await orderModel.findById(req.body.id);
 
-  const orderProds = await orderModel.findById(req.body.id);
+  // const prods = await orderProds.products
+  //   .filter((prod) => prod.product?._id.toString() === req.params.id)
+  //   .map((prod) => {
+  //     return {
+  //       ...prod?.product,
+  //       assignedInstallationDate: new Date(req.body.date),
+  //     };
+  //   });
 
-  const prods = await orderProds.products
-    .filter((prod) => prod.product?._id.toString() === req.params.id)
-    .map((prod) => {
-      return {
-        ...prod?.product,
-        assignedInstallationDate: new Date(req.body.date),
-      };
-    });
+  // console.log("prodss ", prods);
 
-  await orderProds.products
-    .filter((prod) => prod.product?._id.toString() === req.params.id)
-    .push(prods[0]);
+  let index;
+  index = await currOrder.products.findIndex(
+    (prod) => prod.product._id.toString() === req.params.id
+  );
+
+  if (index >= 0) {
+    console.log("index ", index);
+
+    currOrder.products[index].assignedInstallationDate = new Date(
+      req.body.date
+    );
+  }
+
+  const savedOrder = await currOrder.save();
 
   // console.log(
-  //   "order prods ",
-  //   orderProds.products
-  //     .filter((prod) => prod.product?._id.toString() === req.params.id)
-  //     .map((prod) => {
-  //       return {
-  //         ...prod?.product,
-  //         assignedInstallationDate: new Date(req.body.date),
-  //       };
-  //     })
+  //   "product assigned date ",
+  //   orderProds.products[index].product.assignedInstallationDate
   // );
 
   res.status(200).json({ msg: "Date assigned!" });
