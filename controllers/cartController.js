@@ -30,7 +30,11 @@ exports.addItem = catchAsyncError(async (req, res, next) => {
 
   // console.log(isExist);
   if (isExist) {
-    cart?.items.push({ product, quantity });
+    cart?.items.push({
+      product,
+      quantity,
+      installationDate: new Date(installDate),
+    });
   } else {
     const index = cart?.items
       .map((item) => item.product.toString())
