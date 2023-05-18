@@ -48,3 +48,23 @@ exports.isAdmin = async (req, res, next) => {
     return next(new ErrorHandler("Unauthorized.", 401));
   }
 };
+
+exports.isIntermediary = async (req, res, next) => {
+  try {
+    const userId = req.userId;
+    const user = await userModel.findById(userId).select("+password");
+
+    if (!user)
+      return next(new ErrorHandler("Invalid token. User not found.", 401));
+
+    if (user.role !== "intermediary" || user.role !== "admin")
+      return next(new ErrorHandler("Restricted.", 401));
+
+    req.user = user;
+
+    next();
+  } catch (error) {
+    console.log(error);
+    return next(new ErrorHandler("Unauthorized.", 401));
+  }
+};
