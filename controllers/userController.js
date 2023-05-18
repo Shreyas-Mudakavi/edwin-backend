@@ -21,9 +21,16 @@ const sendData = (user, statusCode, res) => {
 exports.register = catchAsyncError(async (req, res, next) => {
   console.log("user register", req.body);
 
-  const { firstname, lastname, mobile_no, email, password, refer_code } = req.body;
+  const { firstname, lastname, mobile_no, email, password, refer_code } =
+    req.body;
 
-  const user = await userModel.create({ firstname, lastname, email, password,mobile_no });
+  const user = await userModel.create({
+    firstname,
+    lastname,
+    email,
+    password,
+    mobile_no,
+  });
 
   if (refer_code) {
     console.log(refer_code);
@@ -52,14 +59,18 @@ exports.login = catchAsyncError(async (req, res, next) => {
   if (!email || !password)
     return next(new ErrorHandler("Please enter your email and password", 400));
 
-  const user = await userModel.findOne({$or: [
-{
-    email:email
-},{
-    mobile_no:email
-},
-
-]}).select("+password");
+  const user = await userModel
+    .findOne({
+      $or: [
+        {
+          email: email,
+        },
+        {
+          mobile_no: email,
+        },
+      ],
+    })
+    .select("+password");
   if (!user) {
     return next(new ErrorHandler("Invalid email or password", 401));
   }
@@ -214,4 +225,54 @@ exports.getUser = catchAsyncError(async (req, res, next) => {
   if (!user) return next(new ErrorHandler("User not found.", 404));
 
   res.status(200).json({ user });
+});
+
+// intermediary
+exports.intermediaryLogin = catchAsyncError(async (req, res, next) => {
+  const { email, password } = req.body;
+
+  if (!email || !password)
+    return next(new ErrorHandler("Please enter your email and password", 400));
+
+  const user = await userModel.findOne({ email }).select("+password");
+  if (!user) return next(new ErrorHandler("Invalid email or password", 401));
+
+  if (user.role !== "admin" || user.role !== "intermediary")
+    return next(new ErrorHandler("Unauthorized user login.", 401));
+
+  const isPasswordMatched = await user.comparePassword(password);
+
+  if (!isPasswordMatched)
+    return next(new ErrorHandler("Invalid email or password!", 401));
+
+  sendData(user, 200, res);
+});
+
+exports.getAllClients = catchAsyncError(async (req, res, next) => {
+  const clientCount = await userModel.countDocuments();
+  console.log("clientCount", clientCount);
+
+  const apiFeature = new APIFeatures(
+    userModel
+      .find({
+        $where: function () {
+          var value = (this.role = "intermediary");
+          return value;
+        },
+      })
+      .sort({ createdAt: -1 }),
+    req.query
+  ).search("firstname");
+
+  let users = await apiFeature.query;
+
+  let filteredClientCount = users.length;
+  if (req.query.resultPerPage && req.query.currentPage) {
+    apiFeature.pagination();
+
+    users = await apiFeature.query.clone();
+  }
+
+  console.log("clients ", users);
+  res.status(200).json({ users, clientCount, filteredClientCount });
 });
