@@ -262,10 +262,7 @@ exports.getAllClients = catchAsyncError(async (req, res, next) => {
   const apiFeature = new APIFeatures(
     userModel
       .find({
-        $where: function () {
-          var value = (this.role = "intermediary");
-          return value;
-        },
+        role: "intermediary",
       })
       .sort({ createdAt: -1 }),
     req.query
