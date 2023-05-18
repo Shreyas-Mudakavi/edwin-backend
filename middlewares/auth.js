@@ -57,7 +57,7 @@ exports.isIntermediary = async (req, res, next) => {
     if (!user)
       return next(new ErrorHandler("Invalid token. User not found.", 401));
 
-    if (user.role !== "intermediary" || user.role !== "admin")
+    if (user.role !== "intermediary")
       return next(new ErrorHandler("Restricted.", 401));
 
     req.user = user;

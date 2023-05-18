@@ -237,10 +237,17 @@ exports.intermediaryLogin = catchAsyncError(async (req, res, next) => {
   const user = await userModel.findOne({ email }).select("+password");
   if (!user) return next(new ErrorHandler("Invalid email or password", 401));
 
-  if (user.role !== "admin" || user.role !== "intermediary")
+  console.log("user ", user);
+  console.log("role ", user.role);
+
+  if (user.role !== "intermediary")
     return next(new ErrorHandler("Unauthorized user login.", 401));
 
+  console.log(password);
+
   const isPasswordMatched = await user.comparePassword(password);
+
+  console.log(isPasswordMatched);
 
   if (!isPasswordMatched)
     return next(new ErrorHandler("Invalid email or password!", 401));

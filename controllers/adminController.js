@@ -845,11 +845,9 @@ exports.deleteInstaller = catchAsyncError(async (req, res, next) => {
 exports.addIntermediary = catchAsyncError(async (req, res, next) => {
   const { firstname, lastname, mobile_no, email, password } = req.body;
 
-  const encryptPw = await bcrypt.hash(password, 11);
-
   const intermediary = await userModel.create({
     email,
-    password: encryptPw,
+    password,
     firstname,
     lastname,
     mobile_no,
