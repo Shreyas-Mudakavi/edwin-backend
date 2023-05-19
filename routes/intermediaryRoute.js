@@ -20,8 +20,8 @@ router.post("/login", intermediaryLogin);
 
 router.get("/user/all", auth, isIntermediary, getAllClients);
 router.get("/user/:id", auth, isIntermediary, getUser);
-router.get("/user/:id", auth, isIntermediary, updateIntermediaryClient);
-router.get("/user/:id", auth, isIntermediary, deleteUser);
+router.get("/user-update/:id", auth, isIntermediary, updateIntermediaryClient);
+router.get("/user-delete/:id", auth, isIntermediary, deleteUser);
 router.post("/client/add", auth, isIntermediary, addIntermediaryClient);
 
 router.get("/getAll-quotes", auth, isIntermediary, getQuotes);
