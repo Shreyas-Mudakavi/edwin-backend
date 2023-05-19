@@ -885,9 +885,11 @@ exports.getIntermediary = catchAsyncError(async (req, res, next) => {
 exports.updateIntermediary = catchAsyncError(async (req, res, next) => {
   const { firstname, lastname, mobile_no, email, password } = req.body;
 
+  const encryptPw = await bcrypt.hash(password, 11);
+
   const intermediary = await userModel.findByIdAndUpdate(
     req.params.id,
-    { email, password, firstname, lastname, mobile_no },
+    { email, password: encryptPw, firstname, lastname, mobile_no },
     { new: true, runValidators: true }
   );
 
