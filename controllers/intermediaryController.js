@@ -1,10 +1,11 @@
+const intermediaryClientModel = require("../models/intermediaryClientModel");
 const userModel = require("../models/userModel");
 const catchAsyncError = require("../utils/catchAsyncError");
 
 exports.addIntermediaryClient = catchAsyncError(async (req, res, next) => {
   const { firstname, lastname, mobile_no, email, password } = req.body;
 
-  const intermediaryClient = await userModel.create({
+  const client = await userModel.create({
     email,
     password,
     firstname,
@@ -12,7 +13,14 @@ exports.addIntermediaryClient = catchAsyncError(async (req, res, next) => {
     mobile_no,
   });
 
-  const savedIntermediaryClient = await intermediaryClient.save();
+  const savedIntermediaryClient = await client.save();
 
-  res.status(200).json(savedIntermediaryClient);
+  const intermediaryClient = await intermediaryClientModel.create({
+    intermediary: req.userId,
+    user: savedIntermediaryClient._id,
+  });
+
+  const savedClient = await intermediaryClient.save();
+
+  res.status(200).json({ msg: "Client added!" });
 });

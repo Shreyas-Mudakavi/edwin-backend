@@ -8,6 +8,7 @@ const catchAsyncError = require("../utils/catchAsyncError");
 const ErrorHandler = require("../utils/errorHandler");
 const APIFeatures = require("../utils/apiFeatures");
 const reviewModel = require("../models/reviewModel");
+const intermediaryClientModel = require("../models/intermediaryClientModel");
 
 const sendData = (user, statusCode, res) => {
   const token = user.getJWTToken();
@@ -256,14 +257,15 @@ exports.intermediaryLogin = catchAsyncError(async (req, res, next) => {
 });
 
 exports.getAllClients = catchAsyncError(async (req, res, next) => {
-  const clientCount = await userModel.countDocuments();
+  const clientCount = await intermediaryClientModel.countDocuments();
   console.log("clientCount", clientCount);
 
   const apiFeature = new APIFeatures(
-    userModel
+    intermediaryClientModel
       .find({
-        role: "intermediary",
+        intermediary: req.userId,
       })
+      .populate("user")
       .sort({ createdAt: -1 }),
     req.query
   ).search("firstname");
@@ -277,6 +279,13 @@ exports.getAllClients = catchAsyncError(async (req, res, next) => {
     users = await apiFeature.query.clone();
   }
 
-  console.log("clients ", users);
-  res.status(200).json({ users, clientCount, filteredClientCount });
+  console.log(
+    "clients ",
+    users?.map((user) => user?.user)
+  );
+  res.status(200).json({
+    users: users?.map((user) => user?.user),
+    clientCount,
+    filteredClientCount,
+  });
 });
