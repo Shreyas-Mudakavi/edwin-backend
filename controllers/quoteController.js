@@ -1,3 +1,4 @@
+const intermediaryClientModel = require("../models/intermediaryClientModel");
 const quoteModel = require("../models/quoteModel");
 const catchAsyncError = require("../utils/catchAsyncError");
 const ErrorHandler = require("../utils/errorHandler");
@@ -23,6 +24,22 @@ exports.addQuote = catchAsyncError(async (req, res, next) => {
 
 exports.getQuotes = catchAsyncError(async (req, res, next) => {
   const quotes = await quoteModel.find();
+
+  if (!quotes) {
+    return next(ErrorHandler("No quotes found!", 404));
+  }
+
+  res.status(200).json(quotes);
+});
+
+exports.getClientQuotes = catchAsyncError(async (req, res, next) => {
+  const intermediaryClient = await intermediaryClientModel.find({
+    intermediary: req.userId,
+  });
+
+  const quotes = await quoteModel.find({
+    user: intermediaryClient.map((user) => user.user),
+  });
 
   if (!quotes) {
     return next(ErrorHandler("No quotes found!", 404));

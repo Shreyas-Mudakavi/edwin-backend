@@ -2,6 +2,10 @@ const mongoose = require("mongoose");
 
 const quoteSchema = new mongoose.Schema(
   {
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
     firstname: {
       type: String,
       required: [true, "Please enter firstname."],
