@@ -1,5 +1,4 @@
 const nodemailer = require("nodemailer");
-const orderModel = require("../models/orderModel");
 
 const sendMail = async (response) => {
   try {
@@ -8,21 +7,21 @@ const sendMail = async (response) => {
       host: "smtp.ethereal.email",
       port: 587,
       auth: {
-        user: "joelle.bailey@ethereal.email",
-        pass: "nt2rf6Xj4ry7NN7sqZ",
+        user: "katelin.lang94@ethereal.email",
+        pass: "BGCmxcgN1J7MX7m84X",
       },
     });
 
     const mailOptions = {
       from: "<katelin.lang94@ethereal.email>",
       to: "shreyasmudak@gmail.com",
-      subject: "Hello from gmail using API",
+      subject: "Hello from admin for quote response",
       //   text: "This email is sent to you using gmail API",
       html: `<html>
       <body>
-      <p>
+      <h1>
       ${response}
-      </p>
+      </h1>
       </body>
       </html>`,
       //   html: `
