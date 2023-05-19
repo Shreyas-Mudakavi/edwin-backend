@@ -18,6 +18,7 @@ const router = express.Router();
 router.post("/login", intermediaryLogin);
 
 router.get("/user/all", auth, isIntermediary, getAllClients);
+router.get("/user/:id", auth, isIntermediary, getUser);
 router.post("/client/add", auth, isIntermediary, addIntermediaryClient);
 
 router.get("/getAll-quotes", auth, isIntermediary, getQuotes);
