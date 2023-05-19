@@ -18,11 +18,11 @@ const router = express.Router();
 
 router.post("/login", intermediaryLogin);
 
+router.post("/client/add", auth, isIntermediary, addIntermediaryClient);
 router.get("/user/all", auth, isIntermediary, getAllClients);
 router.get("/user/:id", auth, isIntermediary, getUser);
-router.get("/user-update/:id", auth, isIntermediary, updateIntermediaryClient);
-router.get("/user-delete/:id", auth, isIntermediary, deleteUser);
-router.post("/client/add", auth, isIntermediary, addIntermediaryClient);
+router.put("/user-update/:id", auth, isIntermediary, updateIntermediaryClient);
+router.delete("/user-delete/:id", auth, isIntermediary, deleteUser);
 
 router.get("/getAll-quotes", auth, isIntermediary, getQuotes);
 router.get("/get-quote/:id", auth, isIntermediary, getQuote);
