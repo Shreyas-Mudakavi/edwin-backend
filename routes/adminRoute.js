@@ -60,6 +60,7 @@ const {
   getQuotes,
   getQuote,
   deleteQuote,
+  quoteResp,
 } = require("../controllers/quoteController");
 const router = express.Router();
 
@@ -113,6 +114,7 @@ router.put("/update/static/:id", auth, isAdmin, updateStaticContent);
 router.get("/getAll-quotes", auth, isAdmin, getQuotes);
 router.get("/get-quote/:id", auth, isAdmin, getQuote);
 router.delete("/delete-quote/:id", auth, isAdmin, deleteQuote);
+router.post("/quote-resp/:id", auth, isAdmin, quoteResp);
 
 router.post("/add-installer", auth, isAdmin, addInstallers);
 router.get("/get-installers", auth, isAdmin, getInstallers);

@@ -12,6 +12,7 @@ const { getQuotes, getQuote } = require("../controllers/quoteController");
 const {
   addIntermediaryClient,
   updateIntermediaryClient,
+  deleteClient,
 } = require("../controllers/intermediaryController");
 
 const router = express.Router();
@@ -22,7 +23,7 @@ router.post("/client/add", auth, isIntermediary, addIntermediaryClient);
 router.get("/user/all", auth, isIntermediary, getAllClients);
 router.get("/user/:id", auth, isIntermediary, getUser);
 router.put("/user-update/:id", auth, isIntermediary, updateIntermediaryClient);
-router.delete("/user-delete/:id", auth, isIntermediary, deleteUser);
+router.delete("/user-delete/:id", auth, isIntermediary, deleteClient);
 
 router.get("/getAll-quotes", auth, isIntermediary, getQuotes);
 router.get("/get-quote/:id", auth, isIntermediary, getQuote);

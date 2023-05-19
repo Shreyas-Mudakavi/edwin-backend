@@ -1,6 +1,7 @@
 const quoteModel = require("../models/quoteModel");
 const catchAsyncError = require("../utils/catchAsyncError");
 const ErrorHandler = require("../utils/errorHandler");
+const sendMail = require("../utils/sendMail");
 
 exports.addQuote = catchAsyncError(async (req, res, next) => {
   const { firstname, lastname, email, mobile_no, details } = req.body;
@@ -50,4 +51,18 @@ exports.deleteQuote = catchAsyncError(async (req, res, next) => {
   await quote.remove();
 
   res.status(200).json({ msg: "Quote deleted!" });
+});
+
+exports.quoteResp = catchAsyncError(async (req, res, next) => {
+  const { response } = req.body;
+
+  const quote = await quoteModel.findById(req.params.id);
+
+  if (!quote) {
+    return next(ErrorHandler("No quote found!", 404));
+  }
+
+  await sendMail(response);
+
+  res.status(200).json({ msg: "Response sent" });
 });

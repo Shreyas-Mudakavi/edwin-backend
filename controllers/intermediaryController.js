@@ -39,3 +39,13 @@ exports.updateIntermediaryClient = catchAsyncError(async (req, res, next) => {
 
   res.status(200).json(intermediaryClient);
 });
+
+exports.deleteClient = catchAsyncError(async (req, res, next) => {
+  const { id } = req.params;
+  const user = await userModel.findOneAndRemove({ _id: id });
+  const client = await intermediaryClientModel.findOneAndRemove({ user: id });
+
+  res.status(200).json({
+    message: "User Deleted Successfully.",
+  });
+});
