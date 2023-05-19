@@ -24,3 +24,17 @@ exports.addIntermediaryClient = catchAsyncError(async (req, res, next) => {
 
   res.status(200).json({ msg: "Client added!" });
 });
+
+exports.updateIntermediaryClient = catchAsyncError(async (req, res, next) => {
+  const { firstname, lastname, mobile_no, email, password } = req.body;
+
+  const encryptPw = await bcrypt.hash(password, 11);
+
+  const intermediaryClient = await userModel.findByIdAndUpdate(
+    req.params.id,
+    { email, password: encryptPw, firstname, lastname, mobile_no },
+    { new: true, runValidators: true }
+  );
+
+  res.status(200).json(intermediaryClient);
+});

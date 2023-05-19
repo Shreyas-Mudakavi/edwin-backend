@@ -11,6 +11,7 @@ const { auth, isIntermediary } = require("../middlewares/auth");
 const { getQuotes, getQuote } = require("../controllers/quoteController");
 const {
   addIntermediaryClient,
+  updateIntermediaryClient,
 } = require("../controllers/intermediaryController");
 
 const router = express.Router();
@@ -19,7 +20,7 @@ router.post("/login", intermediaryLogin);
 
 router.get("/user/all", auth, isIntermediary, getAllClients);
 router.get("/user/:id", auth, isIntermediary, getUser);
-router.get("/user/:id", auth, isIntermediary, updateUser);
+router.get("/user/:id", auth, isIntermediary, updateIntermediaryClient);
 router.get("/user/:id", auth, isIntermediary, deleteUser);
 router.post("/client/add", auth, isIntermediary, addIntermediaryClient);
 
