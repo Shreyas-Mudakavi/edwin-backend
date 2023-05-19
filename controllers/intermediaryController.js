@@ -1,6 +1,7 @@
 const intermediaryClientModel = require("../models/intermediaryClientModel");
 const userModel = require("../models/userModel");
 const catchAsyncError = require("../utils/catchAsyncError");
+const bcrypt = require("bcryptjs");
 
 exports.addIntermediaryClient = catchAsyncError(async (req, res, next) => {
   const { firstname, lastname, mobile_no, email, password } = req.body;
