@@ -10,6 +10,7 @@ exports.addQuote = catchAsyncError(async (req, res, next) => {
   console.log(req.body);
 
   const addQuote = await quoteModel.create({
+    user: req.userId,
     firstname,
     lastname,
     email,
