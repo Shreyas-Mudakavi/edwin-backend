@@ -883,9 +883,11 @@ exports.getIntermediary = catchAsyncError(async (req, res, next) => {
 });
 
 exports.updateIntermediary = catchAsyncError(async (req, res, next) => {
+  const { firstname, lastname, mobile_no, email, password } = req.body;
+
   const intermediary = await userModel.findByIdAndUpdate(
     req.params.id,
-    req.body,
+    { email, password, firstname, lastname, mobile_no },
     { new: true, runValidators: true }
   );
 
