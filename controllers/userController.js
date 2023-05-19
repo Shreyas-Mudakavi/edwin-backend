@@ -200,7 +200,6 @@ exports.deleteUser = catchAsyncError(async (req, res, next) => {
 
 exports.updateUser = catchAsyncError(async (req, res, next) => {
   const { id } = req.params;
-  console.log("user update admin", id);
   const { firstname, lastname, mobile_no, fax, role } = req.body;
 
   const user = await userModel.findById(id);
