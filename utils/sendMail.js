@@ -16,7 +16,7 @@ const sendMail = async (response) => {
       from: "<katelin.lang94@ethereal.email>",
       to: "shreyasmudak@gmail.com",
       subject: "Hello from admin for quote response",
-      //   text: "This email is sent to you using gmail API",
+      text: `${response}`,
       html: `<html>
       <body>
       <h1>
@@ -24,29 +24,6 @@ const sendMail = async (response) => {
       </h1>
       </body>
       </html>`,
-      //   html: `
-      //   <html>
-      //   <body>
-      //   <h1>Order number : ${orderId}</h1>
-      //   ${details?.map((detail) => {
-      //     return <p>detail?.quantity</p>;
-      //   })}
-      //   </body>
-      //   </html>
-      //   `,
-      //   <p> Quantity: ${quantity} </p>
-      //     <p> Name: ${name} </p>
-      //       <h3> Total:  ${amount} </h3>
-      //   amp: `<!doctype html>
-      //     <html>
-      //     <body>
-      //        <p> Quantity: ${details?.quantity} </p>
-      //        <p> Name: ${details?.product?.name} </p>
-      //        <h3> Total:  ${details?.quantity * details?.product?.amount} </h3>
-      //     </body>
-      //     </html>
-
-      //   `,
     };
 
     let info = await transporter.sendMail(mailOptions, (err) => {
