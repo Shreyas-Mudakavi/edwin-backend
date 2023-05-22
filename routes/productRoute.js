@@ -13,7 +13,7 @@ const router = express.Router();
 
 router.post("/create", createProduct);
 router.get("/all", getAllProducts);
-router.get("/:id", auth, getProductInfo);
+router.get("/all-info/:id", auth, getProductInfo);
 router.route("/:id").delete(deleteProduct).put(updateProduct).get(getProduct);
 router.get("/:id/get-recent", getRecentProducts);
 
