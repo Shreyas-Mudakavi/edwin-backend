@@ -1,5 +1,6 @@
 const intermediaryClientModel = require("../models/intermediaryClientModel");
 const quoteModel = require("../models/quoteModel");
+const userModel = require("../models/userModel");
 const catchAsyncError = require("../utils/catchAsyncError");
 const ErrorHandler = require("../utils/errorHandler");
 const sendMail = require("../utils/sendMail");
@@ -80,6 +81,11 @@ exports.quoteResp = catchAsyncError(async (req, res, next) => {
     return next(ErrorHandler("No quote found!", 404));
   }
 
+  const user = await quote.user;
+
+  const userMail = await userModel.findById(user);
+
+  // await sendMail(response, userMail.email);
   await sendMail(response);
 
   res.status(200).json({ msg: "Response sent" });
