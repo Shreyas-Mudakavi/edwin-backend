@@ -145,7 +145,7 @@ exports.adminLogin = catchAsyncError(async (req, res, next) => {
   const user = await userModel.findOne({ email }).select("+password");
   if (!user) return next(new ErrorHandler("Invalid email or password", 401));
 
-  if (user.role !== "admin")
+  if (user.role === "user")
     return next(new ErrorHandler("Unauthorized user login.", 401));
 
   const isPasswordMatched = await user.comparePassword(password);
