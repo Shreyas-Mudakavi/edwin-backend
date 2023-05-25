@@ -1,7 +1,7 @@
 const catchAsyncError = require("../utils/catchAsyncError");
 const reviewModel = require("../models/reviewModel");
 const userModel = require("../models/userModel");
-const {productModel} = require("../models/productModel");
+const { productModel } = require("../models/productModel");
 const ErrorHandler = require("../utils/errorHandler");
 const APIFeatures = require("../utils/apiFeatures");
 
@@ -21,10 +21,20 @@ exports.addReview = catchAsyncError(async (req, res, next) => {
   const user = await userModel.findById(userId);
   if (!user) return next(new ErrorHandler("User not found", 404));
 
-  const num = await reviewModel.count({product});
-  const r = (prod.rating + rating) / (num + 1);
-  prod.rating = r.toFixed(1);
-  await prod.save();
+  console.log(prod);
+
+  const num = await reviewModel.count({ product });
+  console.log("num ", num);
+
+  if (num === 0) {
+    prod.rating = rating.toFixed(1);
+    await prod.save();
+  } else {
+    const r = (prod.rating + rating) / (num + 1);
+    console.log("r ", r);
+    prod.rating = r.toFixed(1);
+    await prod.save();
+  }
 
   const review = await reviewModel.create({
     rating,
@@ -41,19 +51,22 @@ exports.addReview = catchAsyncError(async (req, res, next) => {
 exports.getAllReview = catchAsyncError(async (req, res, next) => {
   const { product } = req.params;
 
-  const reviews = await reviewModel.find({ product }).sort({createdAt: -1}).populate('user');
+  const reviews = await reviewModel
+    .find({ product })
+    .sort({ createdAt: -1 })
+    .populate("user");
 
   res.status(200).json({ reviews });
 });
 
 exports.deleteReview = catchAsyncError(async (req, res, next) => {
-  const {id} = req.params;
+  const { id } = req.params;
   const review = await reviewModel.findById(id);
-  if(!review) return next(new ErrorHandler("Review not found.", 404));
+  if (!review) return next(new ErrorHandler("Review not found.", 404));
 
   await review.remove();
-  res.status(200).json({message: "Review Deleted successfully.",})
-})
+  res.status(200).json({ message: "Review Deleted successfully." });
+});
 exports.getReview = catchAsyncError(async (req, res, next) => {
   const { product } = req.params;
   console.log("product", product);
@@ -79,9 +92,13 @@ exports.allReviews = catchAsyncError(async (req, res, next) => {
   const reviewCount = await reviewModel.countDocuments();
   console.log("reviewCount", reviewCount);
   const apiFeature = new APIFeatures(
-    reviewModel.find().sort({createAt: -1}).populate("product").populate('user'),
+    reviewModel
+      .find()
+      .sort({ createAt: -1 })
+      .populate("product")
+      .populate("user"),
     req.query
-  ).search('comment');
+  ).search("comment");
 
   let reviews = await apiFeature.query;
   console.log("reviews", reviews);
