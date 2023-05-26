@@ -114,7 +114,7 @@ exports.getAll = async (req, res, next) => {
     if (req.query.status !== "all") query.status = req.query.status;
 
     const apiFeature = new APIFeatures(
-      Order.find(query).sort({ createdAt: -1 }),
+      Order.find(query).sort({ createdAt: -1 }).populate("products.installer"),
       req.query
     );
 
