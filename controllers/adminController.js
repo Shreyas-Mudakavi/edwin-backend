@@ -786,7 +786,7 @@ exports.updateStaticContent = catchAsyncError(async (req, res, next) => {
 });
 
 exports.addInstallers = catchAsyncError(async (req, res, next) => {
-  const { name, profilePic, location, zip } = req.body;
+  const { name, profilePic, location, zip, email, mobile } = req.body;
 
   const unique_id = uuidv4();
   const id = unique_id.slice(0, 6);
@@ -794,6 +794,8 @@ exports.addInstallers = catchAsyncError(async (req, res, next) => {
   const installer = await installerModel.create({
     ID: `Edwin - ${id}`,
     name,
+    email,
+    mobile,
     profilePic,
     location,
     zip,
