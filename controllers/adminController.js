@@ -791,6 +791,10 @@ exports.addInstallers = catchAsyncError(async (req, res, next) => {
   const unique_id = uuidv4();
   const id = unique_id.slice(0, 6);
 
+  if (mobile.length < 10) {
+    return next(ErrorHandler("Mobile must be atleast 10 charcters long!", 401));
+  }
+
   const installer = await installerModel.create({
     ID: `Edwin - ${id}`,
     name,
