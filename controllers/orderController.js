@@ -149,7 +149,6 @@ exports.getOrderById = catchAsyncError(async (req, res, next) => {
   console.log("get order", id);
   const order = await Order.findById(id)
     .sort({ createdAt: -1 })
-    .populate("installers")
     .populate("userId");
 
   if (!order) return next(new ErrorHandler("Order not found.", 404));
