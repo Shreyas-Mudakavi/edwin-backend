@@ -101,17 +101,6 @@ exports.updateProduct = catchAsyncError(async (req, res, next) => {
 exports.updateProductInstallDate = catchAsyncError(async (req, res, next) => {
   const currOrder = await orderModel.findById(req.body.id);
 
-  // const prods = await orderProds.products
-  //   .filter((prod) => prod.product?._id.toString() === req.params.id)
-  //   .map((prod) => {
-  //     return {
-  //       ...prod?.product,
-  //       assignedInstallationDate: new Date(req.body.date),
-  //     };
-  //   });
-
-  // console.log("prodss ", prods);
-
   let index;
   index = await currOrder.products.findIndex(
     (prod) => prod.product._id.toString() === req.params.id
@@ -127,12 +116,28 @@ exports.updateProductInstallDate = catchAsyncError(async (req, res, next) => {
 
   const savedOrder = await currOrder.save();
 
-  // console.log(
-  //   "product assigned date ",
-  //   orderProds.products[index].product.assignedInstallationDate
-  // );
-
   res.status(200).json({ msg: "Date assigned!" });
+});
+
+exports.addProductInstaller = catchAsyncError(async (req, res, next) => {
+  const currOrder = await orderModel.findById(req.body.id);
+
+  console.log(currOrder);
+
+  let index;
+  index = await currOrder.products.findIndex(
+    (prod) => prod.product._id.toString() === req.params.id
+  );
+
+  if (index >= 0) {
+    console.log("index ", index);
+
+    currOrder.products[index].installer = req.body.installer;
+  }
+
+  const savedOrder = await currOrder.save();
+
+  res.status(200).json({ msg: "Installer assigned!" });
 });
 
 exports.deleteProduct = catchAsyncError(async (req, res, next) => {

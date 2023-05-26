@@ -35,6 +35,7 @@ const {
   updateProduct,
   deleteProduct,
   updateProductInstallDate,
+  addProductInstaller,
 } = require("../controllers/productController");
 const {
   createPromotion,
@@ -62,6 +63,7 @@ const {
   deleteQuote,
   quoteResp,
 } = require("../controllers/quoteController");
+const { getSearchedInstallers } = require("../controllers/installerController");
 const router = express.Router();
 
 router.get("/all", getAll);
@@ -89,6 +91,7 @@ router
 
 router.post("/product/create", auth, isAdmin, createProduct);
 router.put("/update-productDate/:id", auth, isAdmin, updateProductInstallDate);
+router.put("/update-productInstaller/:id", auth, isAdmin, addProductInstaller);
 router
   .route("/product/:id")
   .put(auth, isAdmin, updateProduct)
@@ -119,6 +122,7 @@ router.post("/quote-resp/:id", auth, isAdmin, quoteResp);
 router.post("/add-installer", auth, isAdmin, addInstallers);
 router.get("/get-installers", auth, isAdmin, getInstallers);
 router.get("/get-installer/:id", auth, isAdmin, getInstaller);
+router.get("/get-search-installer", auth, isAdmin, getSearchedInstallers);
 router.put("/update-installer/:id", auth, isAdmin, updateInstaller);
 router.delete("/delete-installer/:id", auth, isAdmin, deleteInstaller);
 

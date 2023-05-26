@@ -23,6 +23,10 @@ const orderSchema = new Schema(
           type: Date,
           default: null,
         },
+        installer: {
+          type: Schema.Types.ObjectId,
+          ref: "installers",
+        },
       },
     ],
     amount: {
