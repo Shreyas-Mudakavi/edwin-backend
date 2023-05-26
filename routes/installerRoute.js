@@ -3,6 +3,7 @@ const {
   getInstallers,
   getAssiInstaller,
 } = require("../controllers/installerController");
+const { auth } = require("../middlewares/auth");
 const router = express.Router();
 
 router.get("/get-installers", getInstallers);
