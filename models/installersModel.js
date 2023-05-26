@@ -13,10 +13,12 @@ const installerSchema = new mongoose.Schema(
     email: {
       type: String,
       required: [true, "Please enter email."],
+      unique: true,
     },
     mobile: {
       type: String,
       required: [true, "Please enter mobile."],
+      unique: true,
     },
     profilePic: {
       type: String,

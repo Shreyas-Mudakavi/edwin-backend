@@ -795,6 +795,27 @@ exports.addInstallers = catchAsyncError(async (req, res, next) => {
     return next(ErrorHandler("Mobile must be atleast 10 charcters long!", 401));
   }
 
+  const oldInstaller = await installerModel.find({ email: email });
+  const oldInstallerMobile = await installerModel.find({ mobile: mobile });
+  if (oldInstaller) {
+    return next(
+      ErrorHandler("Installer already exists with the given email.", 409)
+    );
+  }
+
+  if (oldInstallerMobile) {
+    return next(
+      ErrorHandler(
+        "Installer already exists with the given mobile number.",
+        409
+      )
+    );
+  }
+
+  if (mobile.length < 10) {
+    return next(ErrorHandler("Mobile must be atleast 10 charcters long!", 401));
+  }
+
   const installer = await installerModel.create({
     ID: `Edwin - ${id}`,
     name,
