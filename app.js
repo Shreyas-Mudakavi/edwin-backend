@@ -29,6 +29,7 @@ const reviewRoute = require("./routes/reviewRoute");
 const staticRoute = require("./routes/staticRoute");
 const quoteRoute = require("./routes/quoteRoute");
 const installerRoute = require("./routes/installerRoute");
+const contactusRoute = require("./routes/contactusRoute");
 
 app.use("/api/user", userRoute);
 app.use("/api/product", productRoute);
@@ -42,6 +43,7 @@ app.use("/api/review", reviewRoute);
 app.use("/api/static", staticRoute);
 app.use("/api/quote", quoteRoute);
 app.use("/api/installers", installerRoute);
+app.use("/api/contactus", contactusRoute);
 
 app.all("*", async (req, res) => {
   res.status(404).json({
