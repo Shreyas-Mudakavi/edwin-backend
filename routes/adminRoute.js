@@ -64,6 +64,11 @@ const {
   quoteResp,
 } = require("../controllers/quoteController");
 const { getSearchedInstallers } = require("../controllers/installerController");
+const {
+  getAllContactus,
+  getContactus,
+  deleteContactus,
+} = require("../controllers/contactusController");
 const router = express.Router();
 
 router.get("/all", getAll);
@@ -131,5 +136,9 @@ router.get("/get-intermediaries", auth, isAdmin, getAllIntermediaries);
 router.get("/get-intermediary/:id", auth, isAdmin, getIntermediary);
 router.put("/update-intermediary/:id", auth, isAdmin, updateIntermediary);
 router.delete("/delete-intermediary/:id", auth, isAdmin, deleteIntermediary);
+
+router.get("/all-contactus", auth, isAdmin, getAllContactus);
+router.get("/view-contactus/:id", auth, isAdmin, getContactus);
+router.delete("/delete-contactus/:id", auth, isAdmin, deleteContactus);
 
 module.exports = router;
