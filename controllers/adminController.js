@@ -836,7 +836,7 @@ exports.getInstallers = catchAsyncError(async (req, res, next) => {
   const apiFeature = new APIFeatures(
     installerModel.find().sort({ createdAt: -1 }),
     req.query
-  ).search("firstname");
+  ).search("name");
 
   let installers = await apiFeature.query;
 
