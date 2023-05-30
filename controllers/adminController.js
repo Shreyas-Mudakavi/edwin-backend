@@ -12,6 +12,7 @@ const { s3Uploadv2, s3UploadMulti } = require("../utils/s3");
 const installerModel = require("../models/installersModel");
 const { v4: uuidv4 } = require("uuid");
 const bcrypt = require("bcryptjs");
+const APIFeatures = require("../utils/apiFeatures");
 
 exports.postSingleImage = catchAsyncError(async (req, res, next) => {
   const file = req.file;
@@ -832,7 +833,20 @@ exports.addInstallers = catchAsyncError(async (req, res, next) => {
 });
 
 exports.getInstallers = catchAsyncError(async (req, res, next) => {
-  const installers = await installerModel.find();
+  const apiFeature = new APIFeatures(
+    installerModel.find().sort({ createdAt: -1 }),
+    req.query
+  ).search("firstname");
+
+  let installers = await apiFeature.query;
+
+  if (req.query.resultPerPage && req.query.currentPage) {
+    apiFeature.pagination();
+
+    installers = await apiFeature.query.clone();
+  }
+
+  // const installers = await installerModel.find();
 
   if (!installers) {
     return next(ErrorHandler("No installers found!", 404));
