@@ -29,6 +29,10 @@ const sendMail = async (response, mail, name) => {
       <p style='margin-top: 1rem'>
       ${response}
       </p>
+      <div style='margin-top: 2rem'>
+      <p>Thank you,</p>
+      <p>Team Edwin</p>
+      </div>
       </body>
       </html>`,
     };
