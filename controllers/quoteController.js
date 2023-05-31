@@ -86,7 +86,8 @@ exports.quoteResp = catchAsyncError(async (req, res, next) => {
   const userMail = await userModel.findById(user);
 
   // await sendMail(response, userMail.email);
-  await sendMail(response);
+  const name = userMail.firstname + " " + userMail.lastname;
+  await sendMail(response, name);
 
   res.status(200).json({ msg: "Response sent" });
 });

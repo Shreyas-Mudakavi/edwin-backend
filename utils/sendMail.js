@@ -1,6 +1,6 @@
 const nodemailer = require("nodemailer");
 
-const sendMail = async (response, mail) => {
+const sendMail = async (response, mail, name) => {
   try {
     let transporter = await nodemailer.createTransport({
       // service: "gmail",
@@ -20,9 +20,15 @@ const sendMail = async (response, mail) => {
       text: `${response}`,
       html: `<html>
       <body>
-      <h1>
+      <p>
+      Hi <b>${name}</b>
+      </p>
+      <p style='margin-top: 1rem'>
+      Thank you for connecting with us! This mail is sent to you regarding your quote request.
+      </p>
+      <p style='margin-top: 1rem'>
       ${response}
-      </h1>
+      </p>
       </body>
       </html>`,
     };
