@@ -61,10 +61,11 @@ exports.getProductInfo = catchAsyncError(async (req, res, next) => {
   const userZipCode = await address[0]?.post_code;
 
   // const zipCodesArr = Array(Number(userZipCode) + 2, Number(userZipCode) - 2);
-  const zipCode = Number(userZipCode) + 2;
+  const zipCodeOne = Number(userZipCode) + 2;
+  const zipCodeTwo = Number(userZipCode) - 2;
 
   const installers = await installerModel.find({
-    zip: { $gte: zipCode },
+    zip: { $elemMatch: { $gt: zipCodeTwo, $lt: zipCodeOne } },
   });
 
   res.status(200).json({ product, installers, userZipCode });
