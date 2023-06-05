@@ -14,8 +14,8 @@ const sendMail = async (response, mail, name) => {
 
     const mailOptions = {
       from: "<katelin.lang94@ethereal.email>",
-      to: "shreyasmudak@gmail.com",
-      // to: `${mail}`,
+      // to: "shreyasmudak@gmail.com",
+      to: `${mail}`,
       subject: "Hello from admin for quote response",
       text: `${response}`,
       html: `<html>
