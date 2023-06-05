@@ -35,12 +35,29 @@ exports.getQuotes = catchAsyncError(async (req, res, next) => {
 });
 
 exports.getClientQuotes = catchAsyncError(async (req, res, next) => {
-  const intermediaryClient = await intermediaryClientModel.find({
+  const intermediaryClient = await intermediaryClientModel.findOne({
     intermediary: req.userId,
   });
 
   const quotes = await quoteModel.find({
-    user: intermediaryClient.map((user) => user.user),
+    user: intermediaryClient.user,
+  });
+
+  if (!quotes) {
+    return next(ErrorHandler("No quotes found!", 404));
+  }
+
+  res.status(200).json(quotes);
+});
+
+exports.getMyQuotesReq = catchAsyncError(async (req, res, next) => {
+  const intermediary = await userModel.findOne({
+    _id: req.userId,
+  });
+
+  const quotes = await quoteModel.find({
+    user: intermediary._id,
+    // user: intermediary.map((user) => user.user),
   });
 
   if (!quotes) {

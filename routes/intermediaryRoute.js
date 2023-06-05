@@ -6,7 +6,12 @@ const {
   getAllClients,
 } = require("../controllers/userController");
 const { auth, isIntermediary } = require("../middlewares/auth");
-const { getQuote, getClientQuotes } = require("../controllers/quoteController");
+const {
+  getQuote,
+  getClientQuotes,
+  getMyQuotesReq,
+  addQuote,
+} = require("../controllers/quoteController");
 const {
   addIntermediaryClient,
   updateIntermediaryClient,
@@ -25,5 +30,8 @@ router.delete("/user-delete/:id", auth, isIntermediary, deleteClient);
 
 router.get("/getAll-quotes", auth, isIntermediary, getClientQuotes);
 router.get("/get-quote/:id", auth, isIntermediary, getQuote);
+
+router.get("/getAll-my-quotes", auth, isIntermediary, getMyQuotesReq);
+router.post("/add-quote", auth, isIntermediary, addQuote);
 
 module.exports = router;
