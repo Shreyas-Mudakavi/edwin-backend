@@ -22,6 +22,11 @@ exports.auth = async (req, res, next) => {
 
     req.userId = userId;
 
+    const userValid = await userModel.find({ _id: userId });
+
+    if (!userValid) {
+      return res.status(401).send({ error: { message: `Unauthorized` } });
+    }
     next();
   } catch (error) {
     console.log(error);
