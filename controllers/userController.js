@@ -299,8 +299,10 @@ exports.getIntermeUser = catchAsyncError(async (req, res, next) => {
   if (!user) return next(new ErrorHandler("User not found.", 404));
 
   const intermediaryClient = await intermediaryClientModel.findOne({
-    intermediary: id,
+    intermediary: req.userId,
   });
+
+  console.log(intermediaryClient);
 
   const quotes = await quoteModel.find({
     user: intermediaryClient.user,
