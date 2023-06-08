@@ -4,6 +4,7 @@ const {
   getUser,
   intermediaryLogin,
   getAllClients,
+  getIntermeUser,
 } = require("../controllers/userController");
 const { auth, isIntermediary } = require("../middlewares/auth");
 const {
@@ -24,7 +25,7 @@ router.post("/login", intermediaryLogin);
 
 router.post("/client/add", auth, isIntermediary, addIntermediaryClient);
 router.get("/user/all", auth, isIntermediary, getAllClients);
-router.get("/user/:id", auth, isIntermediary, getUser);
+router.get("/user/:id", auth, isIntermediary, getIntermeUser);
 router.put("/user-update/:id", auth, isIntermediary, updateIntermediaryClient);
 router.delete("/user-delete/:id", auth, isIntermediary, deleteClient);
 

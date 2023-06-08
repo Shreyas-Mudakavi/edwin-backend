@@ -9,6 +9,7 @@ const ErrorHandler = require("../utils/errorHandler");
 const APIFeatures = require("../utils/apiFeatures");
 const reviewModel = require("../models/reviewModel");
 const intermediaryClientModel = require("../models/intermediaryClientModel");
+const quoteModel = require("../models/quoteModel");
 
 const sendData = (user, statusCode, res) => {
   const token = user.getJWTToken();
@@ -289,4 +290,21 @@ exports.getAllClients = catchAsyncError(async (req, res, next) => {
     clientCount,
     filteredClientCount,
   });
+});
+
+exports.getIntermeUser = catchAsyncError(async (req, res, next) => {
+  const { id } = req.params;
+  const user = await userModel.findById(id);
+
+  if (!user) return next(new ErrorHandler("User not found.", 404));
+
+  const intermediaryClient = await intermediaryClientModel.findOne({
+    intermediary: id,
+  });
+
+  const quotes = await quoteModel.find({
+    user: intermediaryClient.user,
+  });
+
+  res.status(200).json({ user, quotes });
 });
