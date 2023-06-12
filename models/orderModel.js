@@ -58,16 +58,15 @@ const orderSchema = new Schema(
     status: {
       type: String,
       default: "pending",
-      enum: ["pending", "paid", "delivered"],
+      enum: ["pending", "paid", "delivered", "canceled"],
     },
     orderId: {
       type: String,
       required: true,
     },
-    mode: {
+    mollieOrderId: {
       type: String,
-      enum: ["stripe", "paypal", "other"],
-      default: "stripe",
+      required: true,
     },
   },
   {

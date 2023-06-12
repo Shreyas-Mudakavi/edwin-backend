@@ -5,11 +5,15 @@ const {
   getAll,
   getOrder,
   getRecent,
+  verifyOrderStatus,
+  redirectOrder,
 } = require("../controllers/orderController");
 
 const router = express.Router();
 
 router.post("/add", auth, createOrder);
+
+router.post("/webhook", verifyOrderStatus);
 
 router.get("/get-order", auth, getOrder);
 

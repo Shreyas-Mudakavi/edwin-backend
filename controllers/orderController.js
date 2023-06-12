@@ -1,10 +1,18 @@
 const Order = require("../models/orderModel");
 const cartModel = require("../models/cartModel");
+const userModel = require("../models/userModel");
 const { v4: uuid } = require("uuid");
 const catchAsyncError = require("../utils/catchAsyncError");
 const APIFeatures = require("../utils/apiFeatures");
+const dotenv = require("dotenv");
 const ErrorHandler = require("../utils/errorHandler");
 const couponModel = require("../models/couponModel");
+
+const { createMollieClient } = require("@mollie/api-client");
+
+dotenv.config();
+
+const mollieClient = createMollieClient({ apiKey: process.env.MOLLIE_CLIENT });
 
 exports.createOrder = async (req, res, next) => {
   const userId = req.userId;
@@ -59,28 +67,113 @@ exports.createOrder = async (req, res, next) => {
     } else return next(new ErrorHandler("Coupon is expired.", 401));
   }
 
-  const newOrder = new Order({
-    userId: userId,
-    products: products,
-    amount: total,
-    address: {
-      country,
-      post_code,
-      street,
-      town,
-      mobile_no,
-    },
-    orderId: "#" + orderId,
+  const user = await userModel.findOne({ _id: userId });
+
+  const lines = products.map((product) => {
+    return {
+      name: product.product.name,
+      quantity: product.quantity,
+      unitPrice: {
+        currency: "USD",
+        value: product.product.amount.toFixed(2),
+      },
+
+      totalAmount: {
+        currency: "USD",
+        value: (product.quantity * product.product.amount).toFixed(2),
+      },
+      vatRate: "0.00",
+      vatAmount: {
+        currency: "USD",
+        value: "0.00",
+      },
+    };
   });
 
   try {
+    const order = await mollieClient.orders.create({
+      amount: {
+        currency: "USD",
+        value: total.toFixed(2),
+        // value: "2000.00",
+      },
+      orderNumber: "#" + orderId,
+      locale: "en_US",
+      lines: lines,
+      billingAddress: {
+        givenName: user.firstname,
+        // givenName: "shreyas",
+        familyName: user.lastname,
+        // familyName: "test",
+        email: user.email,
+        // email: "workshreyas007@gmail.com",
+        streetAndNumber: street,
+        // streetAndNumber: "stree",
+        postalCode: post_code,
+        // postalCode: "90001",
+        country: "US",
+        city: town,
+        // city: "Los angeles",
+      },
+      // redirectUrl:
+      //   "https://75ab-2405-201-2001-d973-855e-dfa3-7e94-3797.ngrok-free.app/api/order/order-redirect",
+      redirectUrl: process.env.MOLLIE_REDIRECT_URL,
+      cancelUrl: process.env.MOLLIE_CANCEL_URL,
+      // redirectUrl: `http://localhost:3001/home/order`,
+      // cancelUrl: "http://localhost:3001/home/cart",
+      webhookUrl: process.env.MOLLIE_WEBHOOK_URL,
+      // webhookUrl:
+      //   "https://1ac0-2405-201-2001-d973-b012-861f-adc5-62ee.ngrok-free.app/api/order/webhook",
+    });
+
+    const newOrder = new Order({
+      userId: userId,
+      products: products,
+      amount: total,
+      address: {
+        country,
+        post_code,
+        street,
+        town,
+        mobile_no,
+      },
+      orderId: "#" + orderId,
+      mollieOrderId: order.id,
+    });
+
     const savedOrder = await newOrder.save();
 
-    await cartModel.updateOne({ user: req.userId }, { $set: { items: [] } });
+    // await cartModel.updateOne({ user: req.userId }, { $set: { items: [] } });
 
-    res.status(200).json({ message: "Order created!", savedOrder });
+    res.status(200).json({ message: "Order created!", order });
+    // res.redirect(order._links.checkout.href);
   } catch (err) {
-    res.status(500).json(err);
+    console.log(err);
+    res.status(500).json({ err, msg: "Internal server error!" });
+  }
+};
+
+exports.verifyOrderStatus = async (req, res, next) => {
+  console.log("webhook!!! ", req.body.id);
+
+  const orderDetails = await mollieClient.orders.get(req.body.id);
+  // console.log(orderDetails);
+
+  const order = await Order.findOne({ mollieOrderId: req.body.id });
+
+  if (orderDetails.status === "paid") {
+    console.log("paid");
+
+    order.status = "paid";
+    await order.save();
+
+    return res.status(200).json({ status: "ok" });
+  }
+
+  if (orderDetails.status === "canceled") {
+    console.log("canceled!");
+
+    return res.status(200).json({ status: "ok" });
   }
 };
 
@@ -90,9 +183,19 @@ exports.getOrder = async (req, res, next) => {
       .sort({ _id: -1 })
       .limit(1);
 
-    res.status(200).json({ message: "Order found!", orders });
+    if (orders.status !== "paid") {
+      // await orders.remove();
+      console.log("delete id ", orders._id);
+      await Order.findByIdAndDelete(orders._id);
+      return res.status(200).json({ message: "Please complete your payment!" });
+    } else {
+      console.log("paid get order ", orders._id);
+      await cartModel.updateOne({ user: req.userId }, { $set: { items: [] } });
+
+      return res.status(200).json({ message: "Order found!", orders });
+    }
   } catch (err) {
-    res.status(500).json(err);
+    res.status(500).json({ err, msg: "Internal server error!" });
   }
 };
 
