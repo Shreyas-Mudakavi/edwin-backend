@@ -115,15 +115,19 @@ exports.createOrder = async (req, res, next) => {
         city: town,
         // city: "Los angeles",
       },
-      // redirectUrl:
-      //   "https://75ab-2405-201-2001-d973-855e-dfa3-7e94-3797.ngrok-free.app/api/order/order-redirect",
       redirectUrl: process.env.MOLLIE_REDIRECT_URL,
       cancelUrl: process.env.MOLLIE_CANCEL_URL,
       // redirectUrl: `http://localhost:3001/home/order`,
       // cancelUrl: "http://localhost:3001/home/cart",
-      webhookUrl: process.env.MOLLIE_WEBHOOK_URL,
       // webhookUrl:
-      //   "https://1ac0-2405-201-2001-d973-b012-861f-adc5-62ee.ngrok-free.app/api/order/webhook",
+      //   "https://d0fb-2405-201-2001-d973-c080-965d-9527-832a.ngrok-free.app/api/order/webhook",
+      webhookUrl: process.env.MOLLIE_WEBHOOK_URL,
+      payment: {
+        // webhookUrl:
+        // "https://d0fb-2405-201-2001-d973-c080-965d-9527-832a.ngrok-free.app/api/order/webhook",
+        webhookUrl: process.env.MOLLIE_WEBHOOK_URL,
+      },
+      // expiresAt: "2023-06-14",
     });
 
     const newOrder = new Order({
@@ -156,25 +160,41 @@ exports.createOrder = async (req, res, next) => {
 exports.verifyOrderStatus = async (req, res, next) => {
   console.log("webhook!!! ", req.body.id);
 
-  const orderDetails = await mollieClient.orders.get(req.body.id);
-  // console.log(orderDetails);
+  try {
+    const orderDetails = await mollieClient.orders.get(req.body.id);
+    // console.log(orderDetails);
 
-  const order = await Order.findOne({ mollieOrderId: req.body.id });
+    const order = await Order.findOne({ mollieOrderId: req.body.id });
 
-  if (orderDetails.status === "paid") {
-    console.log("paid");
+    if (orderDetails.status === "paid") {
+      console.log("paid");
 
-    order.status = "paid";
+      order.status = "paid";
+      await order.save();
+
+      return res.status(200).json({ status: "ok" });
+    }
+  } catch (error) {
+    const paymentDetails = await mollieClient.payments.get(req.body.id);
+    console.log("pay details!! ", paymentDetails);
+
+    const order = await Order.findOne({
+      mollieOrderId: paymentDetails.orderId,
+    });
+
+    console.log("other status", paymentDetails.status);
+
+    order.status = paymentDetails.status;
     await order.save();
 
     return res.status(200).json({ status: "ok" });
   }
 
-  if (orderDetails.status === "canceled") {
-    console.log("canceled!");
+  return res.status(200).json({ status: "ok" });
+  // // if (orderDetails.status === "canceled") {
+  // console.log("other! ", orderDetails.status);
 
-    return res.status(200).json({ status: "ok" });
-  }
+  // return res.status(200).json({ status: "ok" });
 };
 
 exports.getOrder = async (req, res, next) => {
