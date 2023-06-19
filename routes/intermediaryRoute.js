@@ -18,6 +18,10 @@ const {
   updateIntermediaryClient,
   deleteClient,
 } = require("../controllers/intermediaryController");
+const {
+  getNotification,
+  markReadNotification,
+} = require("../controllers/notificationController");
 
 const router = express.Router();
 
@@ -34,5 +38,8 @@ router.get("/get-quote/:id", auth, isIntermediary, getQuote);
 
 router.get("/getAll-my-quotes", auth, isIntermediary, getMyQuotesReq);
 router.post("/add-quote", auth, isIntermediary, addQuote);
+
+router.get("/get-notification", auth, isIntermediary, getNotification);
+router.put("/mark-read/:id", auth, isIntermediary, markReadNotification);
 
 module.exports = router;

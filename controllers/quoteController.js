@@ -4,6 +4,7 @@ const userModel = require("../models/userModel");
 const catchAsyncError = require("../utils/catchAsyncError");
 const ErrorHandler = require("../utils/errorHandler");
 const sendMail = require("../utils/sendMail");
+const sendNotification = require("../utils/sendNotification");
 
 exports.addQuote = catchAsyncError(async (req, res, next) => {
   const { firstname, lastname, email, mobile_no, details } = req.body;
@@ -105,6 +106,14 @@ exports.quoteResp = catchAsyncError(async (req, res, next) => {
   const name = userMail.firstname + " " + userMail.lastname;
 
   await sendMail(response, userMail.email, name);
+
+  const userId = userMail._id;
+
+  console.log(userMail);
+
+  if (userMail.role === "intermediary") {
+    await sendNotification(userId);
+  }
 
   res.status(200).json({ msg: "Response sent" });
 });
