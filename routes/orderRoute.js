@@ -6,7 +6,7 @@ const {
   getOrder,
   getRecent,
   verifyOrderStatus,
-  redirectOrder,
+  refundOrder,
 } = require("../controllers/orderController");
 
 const router = express.Router();
@@ -14,6 +14,8 @@ const router = express.Router();
 router.post("/add", auth, createOrder);
 
 router.post("/webhook", verifyOrderStatus);
+
+router.post("/refund-order", auth, refundOrder);
 
 router.get("/get-order", auth, getOrder);
 

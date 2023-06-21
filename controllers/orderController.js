@@ -153,7 +153,7 @@ exports.createOrder = async (req, res, next) => {
     // res.redirect(order._links.checkout.href);
   } catch (err) {
     console.log(err);
-    res.status(500).json({ err, msg: "Internal server error!" });
+    return next(ErrorHandler("Internal server error", 500));
   }
 };
 
@@ -197,6 +197,23 @@ exports.verifyOrderStatus = async (req, res, next) => {
   // return res.status(200).json({ status: "ok" });
 };
 
+exports.refundOrder = async (req, res, next) => {
+  try {
+    const order = await Order.findOne({ _id: req.params.id });
+
+    const refund = await mollieClient.orderRefunds.create({
+      orderId: order.mollieOrderId,
+      lines: [],
+      description: `Refund your order number #${order.orderId}`,
+    });
+
+    res.status(200).json({ refund, msg: "Refund initiated!" });
+  } catch (error) {
+    console.log("refund order err", error);
+    return next(ErrorHandler("Internal server error", 500));
+  }
+};
+
 exports.getOrder = async (req, res, next) => {
   try {
     const orders = await Order.findOne({ userId: req.userId })
@@ -215,7 +232,7 @@ exports.getOrder = async (req, res, next) => {
       return res.status(200).json({ message: "Order found!", orders });
     }
   } catch (err) {
-    res.status(500).json({ err, msg: "Internal server error!" });
+    return next(ErrorHandler("Internal server error", 500));
   }
 };
 
@@ -246,7 +263,7 @@ exports.getAll = async (req, res, next) => {
 
     res.status(200).json({ orders });
   } catch (err) {
-    res.status(500).json(err);
+    return next(ErrorHandler("Internal server error", 500));
   }
 };
 
