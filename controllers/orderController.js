@@ -99,6 +99,7 @@ exports.createOrder = async (req, res, next) => {
       },
       orderNumber: "#" + orderId,
       locale: "en_US",
+      // method: 'ideal',
       lines: lines,
       billingAddress: {
         givenName: user.firstname,
