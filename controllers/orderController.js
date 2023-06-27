@@ -74,17 +74,17 @@ exports.createOrder = async (req, res, next) => {
       name: product.product.name,
       quantity: product.quantity,
       unitPrice: {
-        currency: "USD",
+        currency: "EUR",
         value: product.product.amount.toFixed(2),
       },
 
       totalAmount: {
-        currency: "USD",
+        currency: "EUR",
         value: (product.quantity * product.product.amount).toFixed(2),
       },
       vatRate: "0.00",
       vatAmount: {
-        currency: "USD",
+        currency: "EUR",
         value: "0.00",
       },
     };
@@ -93,13 +93,14 @@ exports.createOrder = async (req, res, next) => {
   try {
     const order = await mollieClient.orders.create({
       amount: {
-        currency: "USD",
+        currency: "EUR",
         value: total.toFixed(2),
         // value: "2000.00",
       },
       orderNumber: "#" + orderId,
       locale: "en_US",
-      // method: 'ideal',
+      // method: "ideal",
+      method: ["ideal", "banktransfer", "creditcard"],
       lines: lines,
       billingAddress: {
         givenName: user.firstname,
@@ -118,14 +119,14 @@ exports.createOrder = async (req, res, next) => {
       },
       redirectUrl: process.env.MOLLIE_REDIRECT_URL,
       cancelUrl: process.env.MOLLIE_CANCEL_URL,
-      // redirectUrl: `http://localhost:3001/home/order`,
-      // cancelUrl: "http://localhost:3001/home/cart",
+      // redirectUrl: `http://localhost:3000/home/order`,
+      // cancelUrl: "http://localhost:3000/home/cart",
       // webhookUrl:
-      //   "https://d0fb-2405-201-2001-d973-c080-965d-9527-832a.ngrok-free.app/api/order/webhook",
+      //   "https://dd33-2405-201-2001-d05a-c198-e068-969f-b7f8.ngrok-free.app/api/order/webhook",
       webhookUrl: process.env.MOLLIE_WEBHOOK_URL,
       payment: {
         // webhookUrl:
-        // "https://d0fb-2405-201-2001-d973-c080-965d-9527-832a.ngrok-free.app/api/order/webhook",
+        //   "https://dd33-2405-201-2001-d05a-c198-e068-969f-b7f8.ngrok-free.app/api/order/webhook",
         webhookUrl: process.env.MOLLIE_WEBHOOK_URL,
       },
       // expiresAt: "2023-06-14",
