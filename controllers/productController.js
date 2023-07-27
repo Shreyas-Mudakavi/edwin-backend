@@ -24,7 +24,7 @@ exports.getAllProducts = catchAsyncError(async (req, res, next) => {
   ).search("name");
 
   let products = await apiFeature.query;
-  console.log("products", products);
+  // console.log("products", products);
   let filteredProductCount = products.length;
 
   if (req.query.resultPerPage && req.query.currentPage) {
@@ -34,7 +34,17 @@ exports.getAllProducts = catchAsyncError(async (req, res, next) => {
     products = await apiFeature.query.clone();
   }
 
-  console.log("prod", products);
+  if (req.query.category) {
+    console.log(req.query.category);
+
+    products = await productModel
+      .find({ category: req.query.category })
+      .populate("category")
+      .sort({ createdAt: -1 });
+    filteredProductCount = products.length;
+  }
+
+  // console.log("prod", products);
   res.status(200).json({ products, productCount, filteredProductCount });
 });
 
