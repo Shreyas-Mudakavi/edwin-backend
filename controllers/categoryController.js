@@ -1,12 +1,9 @@
-const {
-  categoryModel,
-  productModel,
-} = require("../models/productModel");
+const { categoryModel, productModel } = require("../models/productModel");
 const APIFeatures = require("../utils/apiFeatures");
 const catchAsyncError = require("../utils/catchAsyncError");
 
 exports.createCategory = catchAsyncError(async (req, res, next) => {
-  console.log("sdsd")
+  console.log("sdsd");
   const { name, description, category_image } = req.body;
   const category = await categoryModel.create({
     name,
@@ -47,11 +44,10 @@ exports.getAllProducts = catchAsyncError(async (req, res, next) => {
   const { id } = req.params;
   const products = await productModel
     .find({ category: id })
+    .populate("category");
 
   res.status(200).json({ products });
 });
-
-
 
 // exports.getAllSubCategory = catchAsyncError(async (req, res, next) => {
 //   const categories = await subCategoryModel.aggregate([
@@ -80,7 +76,6 @@ exports.getAllProducts = catchAsyncError(async (req, res, next) => {
 //   console.log(categories);
 //   res.status(200).json({ categories });
 // });
-
 
 exports.updateCategory = catchAsyncError(async (req, res, next) => {
   const { id } = req.params;
