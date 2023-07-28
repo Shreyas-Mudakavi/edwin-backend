@@ -13,6 +13,7 @@ const installerModel = require("../models/installersModel");
 const { v4: uuidv4 } = require("uuid");
 const bcrypt = require("bcryptjs");
 const APIFeatures = require("../utils/apiFeatures");
+const intermediaryClientModel = require("../models/intermediaryClientModel");
 
 exports.postSingleImage = catchAsyncError(async (req, res, next) => {
   const file = req.file;
@@ -924,16 +925,22 @@ exports.getAllIntermediaries = catchAsyncError(async (req, res, next) => {
 });
 
 exports.getIntermediary = catchAsyncError(async (req, res, next) => {
-  const intermediary = await userModel.find({
+  const intermediary = await userModel.findOne({
     _id: req.params.id,
     role: "intermediary",
   });
+
+  const intermediaryClients = await intermediaryClientModel
+    .find({ intermediary })
+    .populate("user");
 
   if (!intermediary) {
     return next(ErrorHandler("No intermediary found!", 404));
   }
 
-  res.status(200).json(intermediary);
+  res
+    .status(200)
+    .json({ intermediary, intermediaryClients: intermediaryClients });
 });
 
 exports.updateIntermediary = catchAsyncError(async (req, res, next) => {
