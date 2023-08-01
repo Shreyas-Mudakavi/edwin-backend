@@ -1,4 +1,5 @@
 const express = require("express");
+const mongoose = require("mongoose");
 const { productModel, categoryModel } = require("../models/productModel");
 const reviewModel = require("../models/reviewModel");
 const APIFeatures = require("../utils/apiFeatures");
@@ -6,12 +7,55 @@ const catchAsyncError = require("../utils/catchAsyncError");
 const installerModel = require("../models/installersModel");
 const addressModel = require("../models/addressModel");
 const orderModel = require("../models/orderModel");
+const ErrorHandler = require("../utils/errorHandler");
 
 exports.createProduct = catchAsyncError(async (req, res, next) => {
-  const product = await await (
-    await productModel.create(req.body)
-  ).populate("category");
-  res.status(200).json({ product });
+  // when adding using csv
+  // console.log("create prods ", req.body.products);
+
+  // when adding manually
+  // console.log("create prods ", req.body);
+
+  let productsAdded;
+
+  if (req.body.products) {
+    await req.body.products.forEach(async (product) => {
+      try {
+        if (
+          product.category === "" ||
+          product.name === "" ||
+          product.description === ""
+        ) {
+          return next(new ErrorHandler("Invalid product field names!", 403));
+        }
+
+        productsAdded = await (
+          await await productModel.create({
+            name: product.name,
+            description: product.description,
+            amount: product.amount,
+            stock: product.stock,
+            warranty: product.warranty,
+            // category: product.category,
+            category: (
+              await categoryModel.findOne({ name: product.category })
+            )._id,
+          })
+        ).populate("category");
+
+        // console.log(productsAdded);
+        return res.status(200).json({ product: "Products added!" });
+      } catch (error) {
+        return next(new ErrorHandler("Something went wrong.", 500));
+      }
+    });
+  } else {
+    productsAdded = await (
+      await productModel.create(req.body)
+    ).populate("category");
+
+    return res.status(200).json({ product: "Products added!" });
+  }
 });
 
 exports.getAllProducts = catchAsyncError(async (req, res, next) => {
