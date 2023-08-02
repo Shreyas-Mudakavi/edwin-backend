@@ -12,6 +12,7 @@ const {
   getClientQuotes,
   getMyQuotesReq,
   addQuote,
+  updateQuoteStatus,
 } = require("../controllers/quoteController");
 const {
   addIntermediaryClient,
@@ -35,6 +36,7 @@ router.delete("/user-delete/:id", auth, isIntermediary, deleteClient);
 
 router.get("/getAll-quotes", auth, isIntermediary, getClientQuotes);
 router.get("/get-quote/:id", auth, isIntermediary, getQuote);
+router.put("/update-quote-status/:id", auth, isIntermediary, updateQuoteStatus);
 
 router.get("/getAll-my-quotes", auth, isIntermediary, getMyQuotesReq);
 router.post("/add-quote", auth, isIntermediary, addQuote);

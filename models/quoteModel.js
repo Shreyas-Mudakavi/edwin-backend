@@ -26,6 +26,16 @@ const quoteSchema = new mongoose.Schema(
       type: String,
       required: [true, "Please enter your service requirement details."],
     },
+    quoteStatus: {
+      type: String,
+      default: "new",
+      enum: ["new", "pending", "closed"],
+    },
+    paymentStatus: {
+      type: String,
+      default: "pending",
+      enum: ["pending", "finalized"],
+    },
   },
   { timestamps: true }
 );

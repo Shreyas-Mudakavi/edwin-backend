@@ -69,13 +69,37 @@ exports.getMyQuotesReq = catchAsyncError(async (req, res, next) => {
 });
 
 exports.getQuote = catchAsyncError(async (req, res, next) => {
-  const quote = await quoteModel.find({ _id: req.params.id });
+  const quote = await quoteModel.findOne({ _id: req.params.id });
 
   if (!quote) {
     return next(ErrorHandler("No quote found!", 404));
   }
 
-  res.status(200).json(quote);
+  res.status(200).json({ quote: quote });
+});
+
+exports.updateQuoteStatus = catchAsyncError(async (req, res, next) => {
+  if (req.body.quoteStatus) {
+    const quote = await quoteModel.findByIdAndUpdate(
+      req.params.id,
+      {
+        quoteStatus: req.body.quoteStatus,
+      },
+      { new: true }
+    );
+
+    return res.status(200).json({ quoteStatus: "Updated!" });
+  } else {
+    const quote = await quoteModel.findByIdAndUpdate(
+      req.params.id,
+      {
+        paymentStatus: req.body.paymentStatus,
+      },
+      { new: true }
+    );
+
+    return res.status(200).json({ paymentStatus: "Updated!" });
+  }
 });
 
 exports.deleteQuote = catchAsyncError(async (req, res, next) => {

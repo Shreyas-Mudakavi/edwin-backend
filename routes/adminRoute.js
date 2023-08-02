@@ -18,6 +18,11 @@ const {
   getIntermediary,
   updateIntermediary,
   deleteIntermediary,
+  addVendor,
+  getAllVendors,
+  getVendor,
+  updateVendor,
+  deleteVendor,
 } = require("../controllers/adminController");
 const {
   createCategory,
@@ -140,5 +145,11 @@ router.delete("/delete-intermediary/:id", auth, isAdmin, deleteIntermediary);
 router.get("/all-contactus", auth, isAdmin, getAllContactus);
 router.get("/view-contactus/:id", auth, isAdmin, getContactus);
 router.delete("/delete-contactus/:id", auth, isAdmin, deleteContactus);
+
+router.post("/add-vendor", auth, isAdmin, addVendor);
+router.get("/get-vendors", auth, isAdmin, getAllVendors);
+router.get("/get-vendor/:id", auth, isAdmin, getVendor);
+router.put("/update-vendor/:id", auth, isAdmin, updateVendor);
+router.delete("/delete-vendor/:id", auth, isAdmin, deleteVendor);
 
 module.exports = router;

@@ -14,6 +14,7 @@ const { v4: uuidv4 } = require("uuid");
 const bcrypt = require("bcryptjs");
 const APIFeatures = require("../utils/apiFeatures");
 const intermediaryClientModel = require("../models/intermediaryClientModel");
+const venderModel = require("../models/vendorModel");
 
 exports.postSingleImage = catchAsyncError(async (req, res, next) => {
   const file = req.file;
@@ -969,4 +970,78 @@ exports.deleteIntermediary = catchAsyncError(async (req, res, next) => {
   await intermediary.remove();
 
   res.status(200).json({ msg: "Intermediary deleted!" });
+});
+
+exports.addVendor = catchAsyncError(async (req, res, next) => {
+  const { firstname, lastname, mobile_no, email } = req.body;
+
+  const vendor = await venderModel.create({
+    email,
+    firstname,
+    lastname,
+    mobile_no,
+  });
+
+  const savedVendor = await vendor.save();
+
+  res.status(200).json(savedVendor);
+});
+
+exports.getAllVendors = catchAsyncError(async (req, res, next) => {
+  const apiFeature = new APIFeatures(
+    venderModel.find().sort({ createdAt: -1 }),
+    req.query
+  ).search("firstname");
+
+  let vendors = await apiFeature.query;
+
+  if (req.query.resultPerPage && req.query.currentPage) {
+    apiFeature.pagination();
+
+    vendors = await apiFeature.query.clone();
+  }
+
+  // const vendors = await userModel.find({ role: "intermediary" });
+
+  if (!vendors) {
+    return next(ErrorHandler("No vendors found!", 404));
+  }
+
+  res.status(200).json({ vendors: vendors });
+});
+
+exports.getVendor = catchAsyncError(async (req, res, next) => {
+  const vendor = await venderModel.findOne({
+    _id: req.params.id,
+  });
+
+  if (!vendor) {
+    return next(ErrorHandler("No vendor found!", 404));
+  }
+
+  res.status(200).json({ vendor: vendor });
+});
+
+exports.updateVendor = catchAsyncError(async (req, res, next) => {
+  const { firstname, lastname, mobile_no, email } = req.body;
+
+  const vendor = await venderModel.findByIdAndUpdate(
+    req.params.id,
+    { email, firstname, lastname, mobile_no },
+    { new: true, runValidators: true }
+  );
+
+  res.status(200).json({ vendor: vendor });
+});
+
+exports.deleteVendor = catchAsyncError(async (req, res, next) => {
+  const vendor = await venderModel.findById(req.params.id);
+
+  if (!vendor) {
+    return next(ErrorHandler("Vendor does not exists!", 404));
+  }
+
+  await vendor.remove();
+
+  res.status(200).json({ msg: "Vendor deleted!" });
 });
