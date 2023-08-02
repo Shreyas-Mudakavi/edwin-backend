@@ -32,23 +32,40 @@ exports.getQuotes = catchAsyncError(async (req, res, next) => {
     return next(ErrorHandler("No quotes found!", 404));
   }
 
-  res.status(200).json(quotes);
+  res.status(200).json({ quotes: quotes });
 });
 
 exports.getClientQuotes = catchAsyncError(async (req, res, next) => {
-  const intermediaryClient = await intermediaryClientModel.findOne({
-    intermediary: req.userId,
-  });
+  const intermediaryClient = await intermediaryClientModel
+    .find({
+      intermediary: req.userId,
+    })
+    .populate("user");
 
-  const quotes = await quoteModel.find({
-    user: intermediaryClient.user,
-  });
+  console.log("intermediaryClient ", intermediaryClient);
 
-  if (!quotes) {
-    return next(ErrorHandler("No quotes found!", 404));
-  }
+  let quotes = [];
+  const newquo = await intermediaryClient.forEach(
+    async (intermediaryClient) => {
+      const allQuotes = await quoteModel.find({
+        user: intermediaryClient.user,
+      });
 
-  res.status(200).json(quotes);
+      if (!allQuotes) {
+        return next(ErrorHandler("No quotes found!", 404));
+      }
+
+      console.log(allQuotes);
+      await quotes.push(allQuotes);
+      return allQuotes;
+
+      // res.status(200).json({ quotes: { quotes } });
+    }
+  );
+
+  console.log("newquo ", newquo);
+  console.log("quotes ", quotes);
+  res.status(200).json({ msg: "ok" });
 });
 
 exports.getMyQuotesReq = catchAsyncError(async (req, res, next) => {
@@ -70,6 +87,18 @@ exports.getMyQuotesReq = catchAsyncError(async (req, res, next) => {
 
 exports.getQuote = catchAsyncError(async (req, res, next) => {
   const quote = await quoteModel.findOne({ _id: req.params.id });
+
+  if (!quote) {
+    return next(ErrorHandler("No quote found!", 404));
+  }
+
+  res.status(200).json({ quote: quote });
+});
+
+exports.getClientQuotesInfo = catchAsyncError(async (req, res, next) => {
+  const quote = await quoteModel.find({ user: req.params.id });
+
+  console.log(quote);
 
   if (!quote) {
     return next(ErrorHandler("No quote found!", 404));

@@ -23,6 +23,7 @@ const {
   getVendor,
   updateVendor,
   deleteVendor,
+  getInterPerClientInfo,
 } = require("../controllers/adminController");
 const {
   createCategory,
@@ -67,6 +68,8 @@ const {
   getQuote,
   deleteQuote,
   quoteResp,
+  updateQuoteStatus,
+  getClientQuotesInfo,
 } = require("../controllers/quoteController");
 const { getSearchedInstallers } = require("../controllers/installerController");
 const {
@@ -78,6 +81,7 @@ const router = express.Router();
 
 router.get("/all", getAll);
 router.get("/statistics/:time", auth, isAdmin, getStatistics);
+router.get("/intermediariesInfo", auth, isAdmin, getInterPerClientInfo);
 router.post("/login", adminLogin);
 router.get("/user/all", auth, isAdmin, getAllUsers);
 router
@@ -126,6 +130,8 @@ router.put("/update/static/:id", auth, isAdmin, updateStaticContent);
 
 router.get("/getAll-quotes", auth, isAdmin, getQuotes);
 router.get("/get-quote/:id", auth, isAdmin, getQuote);
+router.get("/get-clientQuotes/:id", auth, isAdmin, getClientQuotesInfo);
+router.put("/update-quote-status/:id", auth, isAdmin, updateQuoteStatus);
 router.delete("/delete-quote/:id", auth, isAdmin, deleteQuote);
 router.post("/quote-resp/:id", auth, isAdmin, quoteResp);
 

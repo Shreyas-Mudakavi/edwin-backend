@@ -60,6 +60,10 @@ exports.getStatistics = catchAsyncError(async (req, res, next) => {
   var days = Math.floor((date - startDate) / (24 * 60 * 60 * 1000));
   var week = Math.ceil(days / 7);
 
+  const intermediaries = await userModel
+    .find({ role: "intermediary" })
+    .countDocuments();
+
   if (time == "all") {
     const users = await userModel.aggregate([
       {
@@ -69,6 +73,7 @@ exports.getStatistics = catchAsyncError(async (req, res, next) => {
         },
       },
     ]);
+
     const orders = await orderModel.aggregate([
       {
         $group: {
@@ -191,6 +196,7 @@ exports.getStatistics = catchAsyncError(async (req, res, next) => {
     ]);
     return res.send({
       users: users,
+      intermediaries: intermediaries,
       payments: payments,
       orders: orders,
       quantity: quantity,
@@ -739,6 +745,14 @@ exports.getStatistics = catchAsyncError(async (req, res, next) => {
     });
   }
 });
+
+exports.getInterPerClientInfo = catchAsyncError(async (req, res, next) => {
+  const intermediaries = await userModel.find({ role: "intermediary" });
+
+  res.status(200).json({ intermediaries: intermediaries });
+});
+
+exports.getIntermediariesInfo = catchAsyncError(async (req, res, next) => {});
 
 exports.addStaticContent = catchAsyncError(async (req, res, next) => {
   const { aboutUs, contactUs } = req.body;
