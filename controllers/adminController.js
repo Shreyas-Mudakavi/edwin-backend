@@ -1132,8 +1132,6 @@ exports.updateSatisfiedCustomer = catchAsyncError(async (req, res, next) => {
   }
   await satisfiedCustomer.save();
 
-  console.log(" save ", satisfiedCustomer);
-
   res.status(200).json({ satisfiedCustomer: satisfiedCustomer });
 });
 
@@ -1147,8 +1145,6 @@ exports.deleteSatisfiedCustomer = catchAsyncError(async (req, res, next) => {
 
 exports.addLatestNews = catchAsyncError(async (req, res, next) => {
   const { news } = req.body;
-
-  console.log(req.body);
 
   const latestNews = await staticModel.updateMany({
     $push: {
@@ -1197,10 +1193,7 @@ exports.updateLatestNews = catchAsyncError(async (req, res, next) => {
   if (index >= 0) {
     console.log("index ", index);
 
-    console.log("loggg  ", latestNewsDoc.latestNews[index]?.news);
-
     latestNewsDoc.latestNews[index] = { _id: req.params.id, news: news };
-    console.log("loggg after  ", latestNewsDoc.latestNews[index]?.news);
   }
   await latestNewsDoc.save();
 
