@@ -24,6 +24,16 @@ const {
   updateVendor,
   deleteVendor,
   getInterPerClientInfo,
+  addSatisfiedCustomer,
+  getSatisfiedCustomers,
+  getSatisfiedCustomer,
+  updateSatisfiedCustomer,
+  deleteSatisfiedCustomer,
+  addLatestNews,
+  getLatestNewsDetails,
+  getLatestNews,
+  updateLatestNews,
+  deleteLatestNews,
 } = require("../controllers/adminController");
 const {
   createCategory,
@@ -157,5 +167,27 @@ router.get("/get-vendors", auth, isAdmin, getAllVendors);
 router.get("/get-vendor/:id", auth, isAdmin, getVendor);
 router.put("/update-vendor/:id", auth, isAdmin, updateVendor);
 router.delete("/delete-vendor/:id", auth, isAdmin, deleteVendor);
+
+router.post("/add-satisfiedCustomer", auth, isAdmin, addSatisfiedCustomer);
+router.get("/get-satisfiedCustomers", auth, isAdmin, getSatisfiedCustomers);
+router.get("/get-satisfiedCustomer/:id", auth, isAdmin, getSatisfiedCustomer);
+router.put(
+  "/update-satisfiedCustomer/:id",
+  auth,
+  isAdmin,
+  updateSatisfiedCustomer
+);
+router.delete(
+  "/delete-satisfiedCustomer/:id",
+  auth,
+  isAdmin,
+  deleteSatisfiedCustomer
+);
+
+router.post("/add-latestNews", auth, isAdmin, addLatestNews);
+router.get("/get-latestNews", auth, isAdmin, getLatestNewsDetails);
+router.get("/get-latestNews/:id", auth, isAdmin, getLatestNews);
+router.put("/update-latestNews/:id", auth, isAdmin, updateLatestNews);
+router.delete("/delete-latestNews/:id", auth, isAdmin, deleteLatestNews);
 
 module.exports = router;

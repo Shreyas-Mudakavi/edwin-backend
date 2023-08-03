@@ -1,4 +1,5 @@
 const orderModel = require("../models/orderModel");
+const crypto = require("crypto");
 const {
   categoryModel,
   subCategoryModel,
@@ -15,6 +16,7 @@ const bcrypt = require("bcryptjs");
 const APIFeatures = require("../utils/apiFeatures");
 const intermediaryClientModel = require("../models/intermediaryClientModel");
 const venderModel = require("../models/vendorModel");
+const { default: mongoose } = require("mongoose");
 
 exports.postSingleImage = catchAsyncError(async (req, res, next) => {
   const file = req.file;
@@ -1065,4 +1067,152 @@ exports.deleteVendor = catchAsyncError(async (req, res, next) => {
   await vendor.remove();
 
   res.status(200).json({ msg: "Vendor deleted!" });
+});
+
+exports.addSatisfiedCustomer = catchAsyncError(async (req, res, next) => {
+  const { customerName, customerReview } = req.body;
+
+  // console.log(req.body);
+
+  const satisfiedCustomer = await staticModel.updateMany({
+    $push: {
+      customerReview: {
+        _id: crypto.randomBytes(12).toString("hex"),
+        customerName,
+        customerReview,
+      },
+    },
+  });
+
+  res.status(200).json({ satisfiedCustomer: satisfiedCustomer });
+});
+
+exports.getSatisfiedCustomers = catchAsyncError(async (req, res, next) => {
+  const satisfiedCustomers = await staticModel.findOne();
+
+  // console.log(satisfiedCustomers);
+
+  res.status(200).json({ satisfiedCustomers: satisfiedCustomers });
+});
+
+exports.getSatisfiedCustomer = catchAsyncError(async (req, res, next) => {
+  const satisfiedCustomer = await staticModel.findOne();
+
+  const satisfiedCustomerInfo = satisfiedCustomer.customerReview.filter(
+    (customerReview) => customerReview._id === req.params.id
+  );
+
+  res.status(200).json({
+    satisfiedCustomer: satisfiedCustomerInfo[0],
+    createdAt: satisfiedCustomer.createdAt,
+    updatedAt: satisfiedCustomer.updatedAt,
+  });
+});
+
+exports.updateSatisfiedCustomer = catchAsyncError(async (req, res, next) => {
+  const { customerName, customerReview } = req.body;
+
+  const satisfiedCustomer = await staticModel.findOne();
+
+  let index;
+  index = satisfiedCustomer.customerReview.findIndex(
+    (customerReview) => customerReview?._id === req.params.id
+  );
+
+  if (index >= 0) {
+    console.log("index ", index);
+
+    // console.log(satisfiedCustomer.customerReview[index]);
+
+    satisfiedCustomer.customerReview[index] = {
+      _id: req.params.id,
+      customerName: customerName,
+      customerReview: customerReview,
+    };
+  }
+  await satisfiedCustomer.save();
+
+  console.log(" save ", satisfiedCustomer);
+
+  res.status(200).json({ satisfiedCustomer: satisfiedCustomer });
+});
+
+exports.deleteSatisfiedCustomer = catchAsyncError(async (req, res, next) => {
+  const satisfiedCustomer = await staticModel.updateOne({
+    $pull: { customerReview: { _id: req.params.id } },
+  });
+
+  res.status(200).json({ satisfiedCustomer: "deleted!" });
+});
+
+exports.addLatestNews = catchAsyncError(async (req, res, next) => {
+  const { news } = req.body;
+
+  console.log(req.body);
+
+  const latestNews = await staticModel.updateMany({
+    $push: {
+      latestNews: {
+        _id: crypto.randomBytes(12).toString("hex"),
+        news,
+      },
+    },
+  });
+
+  res.status(200).json({ latestNews: latestNews });
+});
+
+exports.getLatestNewsDetails = catchAsyncError(async (req, res, next) => {
+  const latestNewsDetails = await staticModel.findOne();
+
+  // console.log(latestNewsDetails);
+
+  res.status(200).json({ latestNewsDetails: latestNewsDetails });
+});
+
+exports.getLatestNews = catchAsyncError(async (req, res, next) => {
+  const latestNews = await staticModel.findOne();
+
+  const latestNewsInfo = latestNews.latestNews.filter(
+    (latestNews) => latestNews._id === req.params.id
+  );
+
+  res.status(200).json({
+    latestNews: latestNewsInfo[0],
+    createdAt: latestNews.createdAt,
+    updatedAt: latestNews.updatedAt,
+  });
+});
+
+exports.updateLatestNews = catchAsyncError(async (req, res, next) => {
+  const { news } = req.body;
+
+  const latestNewsDoc = await staticModel.findOne();
+
+  let index;
+  index = await latestNewsDoc.latestNews.findIndex(
+    (latestNews) => latestNews?._id === req.params.id
+  );
+
+  if (index >= 0) {
+    console.log("index ", index);
+
+    console.log("loggg  ", latestNewsDoc.latestNews[index]?.news);
+
+    latestNewsDoc.latestNews[index] = { _id: req.params.id, news: news };
+    console.log("loggg after  ", latestNewsDoc.latestNews[index]?.news);
+  }
+  await latestNewsDoc.save();
+
+  // console.log(" save ", latestNews);
+
+  res.status(200).json({ latestNews: latestNewsDoc });
+});
+
+exports.deleteLatestNews = catchAsyncError(async (req, res, next) => {
+  const latestNews = await staticModel.updateOne({
+    $pull: { latestNews: { _id: req.params.id } },
+  });
+
+  res.status(200).json({ satisfiedCustomer: "deleted!" });
 });
