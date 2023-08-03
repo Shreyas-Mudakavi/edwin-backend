@@ -1002,12 +1002,15 @@ exports.addVendor = catchAsyncError(async (req, res, next) => {
 });
 
 exports.getAllVendors = catchAsyncError(async (req, res, next) => {
+  const vendorCount = await venderModel.countDocuments();
+
   const apiFeature = new APIFeatures(
     venderModel.find().sort({ createdAt: -1 }),
     req.query
   ).search("firstname");
 
   let vendors = await apiFeature.query;
+  const filteredVendorCount = vendors.length;
 
   if (req.query.resultPerPage && req.query.currentPage) {
     apiFeature.pagination();
@@ -1021,7 +1024,11 @@ exports.getAllVendors = catchAsyncError(async (req, res, next) => {
     return next(ErrorHandler("No vendors found!", 404));
   }
 
-  res.status(200).json({ vendors: vendors });
+  res.status(200).json({
+    vendors: vendors,
+    vendorCount: vendorCount,
+    filteredVendorCount: filteredVendorCount,
+  });
 });
 
 exports.getVendor = catchAsyncError(async (req, res, next) => {
