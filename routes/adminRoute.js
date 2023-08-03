@@ -80,6 +80,7 @@ const {
   quoteResp,
   updateQuoteStatus,
   getClientQuotesInfo,
+  quoteResponses,
 } = require("../controllers/quoteController");
 const { getSearchedInstallers } = require("../controllers/installerController");
 const {
@@ -144,6 +145,7 @@ router.get("/get-clientQuotes/:id", auth, isAdmin, getClientQuotesInfo);
 router.put("/update-quote-status/:id", auth, isAdmin, updateQuoteStatus);
 router.delete("/delete-quote/:id", auth, isAdmin, deleteQuote);
 router.post("/quote-resp/:id", auth, isAdmin, quoteResp);
+router.get("/previous-quote-resp/:id", auth, isAdmin, quoteResponses);
 
 router.post("/add-installer", auth, isAdmin, addInstallers);
 router.get("/get-installers", auth, isAdmin, getInstallers);

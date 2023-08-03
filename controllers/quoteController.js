@@ -1,5 +1,6 @@
 const intermediaryClientModel = require("../models/intermediaryClientModel");
 const quoteModel = require("../models/quoteModel");
+const quoteResponseModel = require("../models/quoteResponseModel");
 const userModel = require("../models/userModel");
 const catchAsyncError = require("../utils/catchAsyncError");
 const ErrorHandler = require("../utils/errorHandler");
@@ -162,6 +163,42 @@ exports.quoteResp = catchAsyncError(async (req, res, next) => {
 
   await sendMail(response, userMail.email, name, responseDoc);
 
+  const quoteRespArray = [
+    {
+      response: response,
+      responseDoc: responseDoc,
+    },
+  ];
+
+  const newResponse = quoteRespArray.map((response) => {
+    return {
+      response: response?.response,
+      responseDoc: response?.responseDoc,
+      from: "admin",
+      respondedOn: new Date(),
+    };
+  });
+
+  const olderQuoteResp = await quoteResponseModel.findOne({
+    quote: quote._id,
+  });
+
+  if (olderQuoteResp) {
+    const quoteResponse = await quoteResponseModel.updateMany({
+      $push: {
+        response: newResponse[0],
+      },
+    });
+  } else {
+    const quoteResponse = await quoteResponseModel.create({
+      user: userMail._id,
+      quote: quote._id,
+      response: newResponse,
+    });
+
+    await quoteResponse.save();
+  }
+
   const userId = userMail._id;
 
   // console.log(userMail);
@@ -171,4 +208,14 @@ exports.quoteResp = catchAsyncError(async (req, res, next) => {
   }
 
   res.status(200).json({ msg: "Response sent" });
+});
+
+exports.quoteResponses = catchAsyncError(async (req, res, next) => {
+  const quote = await quoteModel.findById(req.params.id);
+
+  const allQuoteResp = await quoteResponseModel.findOne({
+    quote: quote._id,
+  });
+
+  res.status(200).json({ allQuoteResp: allQuoteResp });
 });
