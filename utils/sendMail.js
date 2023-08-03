@@ -1,6 +1,6 @@
 const nodemailer = require("nodemailer");
 
-const sendMail = async (response, mail, name) => {
+const sendMail = async (response, mail, name, docLink) => {
   try {
     let transporter = await nodemailer.createTransport({
       // service: "gmail",
@@ -29,6 +29,12 @@ const sendMail = async (response, mail, name) => {
       <p style='margin-top: 1rem'>
       ${response}
       </p>
+      <div style='margin-top: 1rem'>
+      <p>
+      Please refer below document for clarification.
+      </p>
+      <a href="${docLink}" target="_blank">Click here</a>
+      </div>
       <div style='margin-top: 2rem'>
       <p>Thank you,</p>
       <p>Team Edwin</p>

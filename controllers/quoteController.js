@@ -144,7 +144,9 @@ exports.deleteQuote = catchAsyncError(async (req, res, next) => {
 });
 
 exports.quoteResp = catchAsyncError(async (req, res, next) => {
-  const { response } = req.body;
+  const { response, responseDoc } = req.body;
+
+  console.log("res doc ", responseDoc);
 
   const quote = await quoteModel.findById(req.params.id);
 
@@ -158,11 +160,11 @@ exports.quoteResp = catchAsyncError(async (req, res, next) => {
 
   const name = userMail.firstname + " " + userMail.lastname;
 
-  await sendMail(response, userMail.email, name);
+  await sendMail(response, userMail.email, name, responseDoc);
 
   const userId = userMail._id;
 
-  console.log(userMail);
+  // console.log(userMail);
 
   if (userMail.role === "intermediary") {
     await sendNotification(userId);
