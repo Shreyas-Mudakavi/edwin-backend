@@ -998,7 +998,7 @@ exports.addVendor = catchAsyncError(async (req, res, next) => {
 
   const savedVendor = await vendor.save();
 
-  res.status(200).json(savedVendor);
+  res.status(200).json({ savedVendor: savedVendor });
 });
 
 exports.getAllVendors = catchAsyncError(async (req, res, next) => {
