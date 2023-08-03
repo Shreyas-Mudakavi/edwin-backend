@@ -84,7 +84,7 @@ exports.getMyQuotesReq = catchAsyncError(async (req, res, next) => {
     return next(ErrorHandler("No quotes found!", 404));
   }
 
-  res.status(200).json(quotes);
+  res.status(200).json({ quotes: quotes });
 });
 
 exports.getQuote = catchAsyncError(async (req, res, next) => {
