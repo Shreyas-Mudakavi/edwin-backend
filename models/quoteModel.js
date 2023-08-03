@@ -36,6 +36,9 @@ const quoteSchema = new mongoose.Schema(
       default: "pending",
       enum: ["pending", "finalized"],
     },
+    quoteDoc: {
+      type: String,
+    },
   },
   { timestamps: true }
 );

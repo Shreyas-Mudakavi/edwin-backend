@@ -8,7 +8,7 @@ const sendMail = require("../utils/sendMail");
 const sendNotification = require("../utils/sendNotification");
 
 exports.addQuote = catchAsyncError(async (req, res, next) => {
-  const { firstname, lastname, email, mobile_no, details } = req.body;
+  const { firstname, lastname, email, mobile_no, details, quoteDoc } = req.body;
 
   console.log(req.body);
 
@@ -19,6 +19,7 @@ exports.addQuote = catchAsyncError(async (req, res, next) => {
     email,
     mobile_no,
     details,
+    quoteDoc,
   });
 
   const savedQuote = await addQuote.save();
