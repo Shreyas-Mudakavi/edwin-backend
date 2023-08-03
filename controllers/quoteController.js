@@ -147,8 +147,6 @@ exports.deleteQuote = catchAsyncError(async (req, res, next) => {
 exports.quoteResp = catchAsyncError(async (req, res, next) => {
   const { response, responseDoc } = req.body;
 
-  console.log("res doc ", responseDoc);
-
   const quote = await quoteModel.findById(req.params.id);
 
   if (!quote) {
@@ -198,6 +196,12 @@ exports.quoteResp = catchAsyncError(async (req, res, next) => {
 
     await quoteResponse.save();
   }
+
+  await quoteModel.findByIdAndUpdate(
+    req.params.id,
+    { quoteStatus: "pending" },
+    { new: true }
+  );
 
   const userId = userMail._id;
 
