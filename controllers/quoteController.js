@@ -137,9 +137,10 @@ exports.getQuote = catchAsyncError(async (req, res, next) => {
 });
 
 exports.getClientQuotesInfo = catchAsyncError(async (req, res, next) => {
+  console.log(req.params.id);
   const quote = await quoteModel.find({ user: req.params.id });
 
-  // console.log(quote);
+  console.log(quote);
 
   if (!quote) {
     return next(ErrorHandler("No quote found!", 404));

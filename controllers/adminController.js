@@ -948,8 +948,10 @@ exports.getIntermediary = catchAsyncError(async (req, res, next) => {
   });
 
   const intermediaryClients = await intermediaryClientModel
-    .find({ intermediary })
+    .findOne({ intermediary })
     .populate("user");
+
+  console.log(intermediaryClients);
 
   if (!intermediary) {
     return next(ErrorHandler("No intermediary found!", 404));
