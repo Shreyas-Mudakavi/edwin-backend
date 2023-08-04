@@ -14,6 +14,8 @@ const {
   addQuote,
   updateQuoteStatus,
   getClientQuotesInfo,
+  quoteRespIntermediary,
+  quoteResponses,
 } = require("../controllers/quoteController");
 const {
   addIntermediaryClient,
@@ -45,5 +47,7 @@ router.post("/add-quote", auth, isIntermediary, addQuote);
 
 router.get("/get-notification", auth, isIntermediary, getNotification);
 router.put("/mark-read/:id", auth, isIntermediary, markReadNotification);
+router.post("/quote-resp/:id", auth, isIntermediary, quoteRespIntermediary);
+router.get("/previous-quote-resp/:id", auth, isIntermediary, quoteResponses);
 
 module.exports = router;

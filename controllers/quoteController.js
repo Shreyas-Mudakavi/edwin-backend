@@ -39,35 +39,74 @@ exports.getQuotes = catchAsyncError(async (req, res, next) => {
 
 exports.getClientQuotes = catchAsyncError(async (req, res, next) => {
   const intermediaryClient = await intermediaryClientModel
-    .find({
+    .findOne({
       intermediary: req.userId,
     })
     .populate("user");
 
   console.log("intermediaryClient ", intermediaryClient);
 
-  let quotes = [];
-  const newquo = await intermediaryClient.forEach(
-    async (intermediaryClient) => {
-      const allQuotes = await quoteModel.find({
-        user: intermediaryClient.user,
-      });
+  // intermediaryClient.forEach(async (client) => {
+  const clientQuotes = await quoteModel.aggregate([
+    {
+      $match: {
+        user: { $in: intermediaryClient.user },
+      },
+    },
+    {
+      $group: {
+        _id: {
+          details: "$details",
+          firstname: "$firstname",
+          lastname: "$lastname",
+          email: "$email",
+          mobile_no: "$mobile_no",
+          quoteStatus: "$quoteStatus",
+          paymentStatus: "$paymentStatus",
+          createdAt: "$createdAt",
+          updatedAt: "$updatedAt",
+          _id: "$_id",
+        },
+        // user: { user: intermediaryClient[0].user._id },
+        // details: { details: "$details" },
+      },
+    },
+  ]);
 
-      if (!allQuotes) {
-        return next(ErrorHandler("No quotes found!", 404));
-      }
+  console.log("aggre ", clientQuotes);
 
-      console.log(allQuotes);
-      await quotes.push(allQuotes);
-      return allQuotes;
+  // const clientQuotesArrya = aggregateLoop.map((clientQuote) => {
+  //   return {
+  //     firstname: clientQuote._id.firstname,
+  //     lastname: clientQuote._id.lastname,
+  //     details: clientQuote._id.details,
+  //   };
+  // });
 
-      // res.status(200).json({ quotes: { quotes } });
-    }
-  );
+  // console.log("aggre res ", clientQuotesArrya);
+  res.status(200).json({ quotes: clientQuotes });
 
-  console.log("newquo ", newquo);
-  console.log("quotes ", quotes);
-  res.status(200).json({ msg: "ok" });
+  // let quotes = [];
+  // const newquo = await intermediaryClient.forEach(
+  //   async (intermediaryClient) => {
+  //     const allQuotes = await quoteModel.find({
+  //       user: intermediaryClient.user,
+  //     });
+
+  //     if (!allQuotes) {
+  //       return next(ErrorHandler("No quotes found!", 404));
+  //     }
+
+  //     console.log(allQuotes);
+  //     await quotes.push(allQuotes);
+  //     return allQuotes;
+
+  //     // res.status(200).json({ quotes: { quotes } });
+  //   }
+  // );
+
+  // console.log("newquo ", newquo);
+  // console.log("quotes ", quotes);
 });
 
 exports.getMyQuotesReq = catchAsyncError(async (req, res, next) => {
@@ -211,6 +250,72 @@ exports.quoteResp = catchAsyncError(async (req, res, next) => {
   if (userMail.role === "intermediary") {
     await sendNotification(userId);
   }
+
+  res.status(200).json({ msg: "Response sent" });
+});
+
+exports.quoteRespIntermediary = catchAsyncError(async (req, res, next) => {
+  console.log(req.user);
+  console.log(req.userRole);
+
+  const { response, responseDoc } = req.body;
+
+  const quote = await quoteModel.findById(req.params.id);
+
+  if (!quote) {
+    return next(ErrorHandler("No quote found!", 404));
+  }
+
+  const user = await quote.user;
+
+  const userMail = await userModel.findById(user);
+
+  const name = userMail.firstname + " " + userMail.lastname;
+
+  await sendMail(response, userMail.email, name, responseDoc);
+
+  const quoteRespArray = [
+    {
+      response: response,
+      responseDoc: responseDoc,
+    },
+  ];
+
+  const newResponse = quoteRespArray.map((response) => {
+    return {
+      response: response?.response,
+      responseDoc: response?.responseDoc,
+      from: req.userRole,
+      respondedOn: new Date(),
+    };
+  });
+
+  console.log("quote id ", quote._id);
+  const olderQuoteResp = await quoteResponseModel.findOne({
+    quote: quote._id,
+  });
+
+  if (olderQuoteResp) {
+    const quoteResponse = await quoteResponseModel.updateMany({
+      $push: {
+        response: newResponse[0],
+      },
+    });
+  } else {
+    const quoteResponse = await quoteResponseModel.create({
+      user: userMail._id,
+      quote: quote._id,
+      response: newResponse,
+    });
+
+    await quoteResponse.save();
+  }
+
+  // await quoteModel.findByIdAndUpdate(
+  //   req.params.id,
+  //   { quoteStatus: "pending" },
+  //   { new: true }
+  // );
 
   res.status(200).json({ msg: "Response sent" });
 });

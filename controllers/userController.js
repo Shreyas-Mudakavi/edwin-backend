@@ -286,7 +286,7 @@ exports.getAllClients = catchAsyncError(async (req, res, next) => {
     users?.map((user) => user?.user)
   );
   res.status(200).json({
-    users: users?.map((user) => user?.user),
+    users: users,
     clientCount,
     filteredClientCount,
   });
@@ -301,8 +301,6 @@ exports.getIntermeUser = catchAsyncError(async (req, res, next) => {
   const intermediaryClient = await intermediaryClientModel.findOne({
     intermediary: req.userId,
   });
-
-  console.log(intermediaryClient);
 
   const quotes = await quoteModel.find({
     user: id,

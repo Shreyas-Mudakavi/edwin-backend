@@ -16,14 +16,28 @@ exports.addIntermediaryClient = catchAsyncError(async (req, res, next) => {
 
   const savedIntermediaryClient = await client.save();
 
-  const intermediaryClient = await intermediaryClientModel.create({
+  const alreadyIntermediartClient = await intermediaryClientModel.findOne({
     intermediary: req.userId,
-    user: savedIntermediaryClient._id,
   });
 
-  const savedClient = await intermediaryClient.save();
+  if (alreadyIntermediartClient) {
+    console.log("already ");
+    await intermediaryClientModel.updateOne({
+      $push: {
+        user: savedIntermediaryClient._id,
+      },
+    });
+    return res.status(200).json({ msg: "Client added!" });
+  } else {
+    console.log("no already ");
+    const intermediaryClient = await intermediaryClientModel.create({
+      intermediary: req.userId,
+      user: savedIntermediaryClient._id,
+    });
 
-  res.status(200).json({ msg: "Client added!" });
+    const savedClient = await intermediaryClient.save();
+    return res.status(200).json({ msg: "Client added!" });
+  }
 });
 
 exports.updateIntermediaryClient = catchAsyncError(async (req, res, next) => {

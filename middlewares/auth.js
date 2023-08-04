@@ -65,7 +65,8 @@ exports.isIntermediary = async (req, res, next) => {
     if (user.role !== "intermediary")
       return next(new ErrorHandler("Restricted.", 401));
 
-    req.user = user;
+    req.user = user._id;
+    req.userRole = user.role;
 
     next();
   } catch (error) {
