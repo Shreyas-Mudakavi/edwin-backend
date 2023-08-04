@@ -2,13 +2,9 @@ const mongoose = require("mongoose");
 
 const vendorSchema = new mongoose.Schema(
   {
-    firstname: {
+    fullname: {
       type: String,
-      required: [true, "Please enter firstname for vendor"],
-    },
-    lastname: {
-      type: String,
-      required: [true, "Please enter lastname for vendor"],
+      required: [true, "Please enter name for the vendor"],
     },
     email: {
       type: String,

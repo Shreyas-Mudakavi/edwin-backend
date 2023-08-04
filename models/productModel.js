@@ -51,6 +51,11 @@ const productSchema = new mongoose.Schema(
       ref: "Category",
       required: [true, "Please provide belonging category."],
     },
+    vendor: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "vender",
+      required: [true, "Please provide belonging vendor."],
+    },
   },
   { timestamps: true }
 );

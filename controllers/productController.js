@@ -8,6 +8,7 @@ const installerModel = require("../models/installersModel");
 const addressModel = require("../models/addressModel");
 const orderModel = require("../models/orderModel");
 const ErrorHandler = require("../utils/errorHandler");
+const venderModel = require("../models/vendorModel");
 
 exports.createProduct = catchAsyncError(async (req, res, next) => {
   // when adding using csv
@@ -29,6 +30,14 @@ exports.createProduct = catchAsyncError(async (req, res, next) => {
           return next(new ErrorHandler("Invalid product field names!", 403));
         }
 
+        const categoryName = await categoryModel.findOne({
+          name: product.category,
+        });
+
+        if (!categoryName) {
+          return next(new ErrorHandler("Invalid category name!", 403));
+        }
+
         productsAdded = await (
           await await productModel.create({
             name: product.name,
@@ -40,15 +49,19 @@ exports.createProduct = catchAsyncError(async (req, res, next) => {
             category: (
               await categoryModel.findOne({ name: product.category })
             )._id,
+            vendor: (
+              await venderModel.findOne({ fullname: product.vendorName })
+            )._id,
           })
         ).populate("category");
 
         // console.log(productsAdded);
-        return res.status(200).json({ product: "Products added!" });
       } catch (error) {
+        console.log("prod add err ", error);
         return next(new ErrorHandler("Something went wrong.", 500));
       }
     });
+    return res.status(200).json({ product: "Products added!" });
   } else {
     productsAdded = await (
       await productModel.create(req.body)
@@ -63,7 +76,11 @@ exports.getAllProducts = catchAsyncError(async (req, res, next) => {
   const productCount = await productModel.countDocuments();
   console.log("productCount", productCount);
   const apiFeature = new APIFeatures(
-    productModel.find().populate("category").sort({ createdAt: -1 }),
+    productModel
+      .find()
+      .populate("category")
+      .populate("vendor")
+      .sort({ createdAt: -1 }),
     req.query
   ).search("name");
 
@@ -84,6 +101,7 @@ exports.getAllProducts = catchAsyncError(async (req, res, next) => {
     products = await productModel
       .find({ category: req.query.category })
       .populate("category")
+      .populate("vendor")
       .sort({ createdAt: -1 });
     filteredProductCount = products.length;
   }
@@ -95,7 +113,8 @@ exports.getAllProducts = catchAsyncError(async (req, res, next) => {
 exports.getProduct = catchAsyncError(async (req, res, next) => {
   const product = await productModel
     .findById(req.params.id)
-    .populate("category");
+    .populate("category")
+    .populate("vendor");
 
   res.status(200).json({ product });
 });

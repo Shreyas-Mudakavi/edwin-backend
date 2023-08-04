@@ -989,12 +989,11 @@ exports.deleteIntermediary = catchAsyncError(async (req, res, next) => {
 });
 
 exports.addVendor = catchAsyncError(async (req, res, next) => {
-  const { firstname, lastname, mobile_no, email } = req.body;
+  const { fullname, mobile_no, email } = req.body;
 
   const vendor = await venderModel.create({
     email,
-    firstname,
-    lastname,
+    fullname,
     mobile_no,
   });
 
@@ -1009,7 +1008,7 @@ exports.getAllVendors = catchAsyncError(async (req, res, next) => {
   const apiFeature = new APIFeatures(
     venderModel.find().sort({ createdAt: -1 }),
     req.query
-  ).search("firstname");
+  ).search("fullname");
 
   let vendors = await apiFeature.query;
   const filteredVendorCount = vendors.length;
@@ -1046,11 +1045,11 @@ exports.getVendor = catchAsyncError(async (req, res, next) => {
 });
 
 exports.updateVendor = catchAsyncError(async (req, res, next) => {
-  const { firstname, lastname, mobile_no, email } = req.body;
+  const { fullname, mobile_no, email } = req.body;
 
   const vendor = await venderModel.findByIdAndUpdate(
     req.params.id,
-    { email, firstname, lastname, mobile_no },
+    { email, fullname, mobile_no },
     { new: true, runValidators: true }
   );
 
