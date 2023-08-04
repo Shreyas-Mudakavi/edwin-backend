@@ -11,5 +11,5 @@ exports.getStatic = catchAsyncError(async (req, res, next) => {
     return next(new ErrorHandler("Content will be added soon!", 404));
   }
 
-  res.status(200).json(staticContent);
+  res.status(200).json({ staticContent: staticContent });
 });
