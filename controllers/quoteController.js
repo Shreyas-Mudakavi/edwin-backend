@@ -2,6 +2,7 @@ const intermediaryClientModel = require("../models/intermediaryClientModel");
 const quoteModel = require("../models/quoteModel");
 const quoteResponseModel = require("../models/quoteResponseModel");
 const userModel = require("../models/userModel");
+const APIFeatures = require("../utils/apiFeatures");
 const catchAsyncError = require("../utils/catchAsyncError");
 const ErrorHandler = require("../utils/errorHandler");
 const sendMail = require("../utils/sendMail");
@@ -28,13 +29,49 @@ exports.addQuote = catchAsyncError(async (req, res, next) => {
 });
 
 exports.getQuotes = catchAsyncError(async (req, res, next) => {
-  const quotes = await quoteModel.find();
+  // const userCount = await userModel.countDocuments();
+  // console.log("userCount", userCount);
+  // const apiFeature = new APIFeatures(
+  //   userModel.find().sort({ createdAt: -1 }),
+  //   req.query
+  // ).search("firstname");
+
+  // let users = await apiFeature.query;
+  // console.log("users", users);
+  // let filteredUserCount = users.length;
+  // if (req.query.resultPerPage && req.query.currentPage) {
+  //   apiFeature.pagination();
+
+  //   console.log("filteredUserCount", filteredUserCount);
+  //   users = await apiFeature.query.clone();
+  // }
+  // console.log("users", users);
+  // res.status(200).json({ users, userCount, filteredUserCount });
+
+  const quoteCount = await quoteModel.countDocuments();
+
+  const apiFeature = new APIFeatures(
+    quoteModel.find().populate("user").sort({ createdAt: -1 }),
+    req.query
+  ).search("firstname");
+
+  let quotes = await apiFeature.query;
+  let filteredQuoteCount = quotes.length;
+  if (req.query.resultPerPage && req.query.currentPage) {
+    apiFeature.pagination();
+
+    quotes = await apiFeature.query.clone();
+  }
 
   if (!quotes) {
     return next(ErrorHandler("No quotes found!", 404));
   }
 
-  res.status(200).json({ quotes: quotes });
+  res.status(200).json({
+    quotes: quotes,
+    filteredQuoteCount: filteredQuoteCount,
+    quoteCount: quoteCount,
+  });
 });
 
 exports.getClientQuotes = catchAsyncError(async (req, res, next) => {
