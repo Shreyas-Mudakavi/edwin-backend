@@ -17,6 +17,9 @@ const APIFeatures = require("../utils/apiFeatures");
 const intermediaryClientModel = require("../models/intermediaryClientModel");
 const venderModel = require("../models/vendorModel");
 const { default: mongoose } = require("mongoose");
+const cartModel = require("../models/cartModel");
+const addressModel = require("../models/addressModel");
+const reviewModel = require("../models/reviewModel");
 
 exports.postSingleImage = catchAsyncError(async (req, res, next) => {
   const file = req.file;
@@ -979,8 +982,12 @@ exports.updateIntermediary = catchAsyncError(async (req, res, next) => {
 exports.deleteIntermediary = catchAsyncError(async (req, res, next) => {
   const intermediary = await userModel.findById(req.params.id);
 
+  console.log("interme del ", intermediary);
+
   const cart = await cartModel.findOne({ user: intermediary?._id });
-  await cart.remove();
+  if (cart) {
+    await cart.remove();
+  }
   await orderModel.deleteMany({ userId: req.params.id });
   await addressModel.deleteMany({ user: req.params.id });
   await reviewModel.deleteMany({ user: req.params.id });
