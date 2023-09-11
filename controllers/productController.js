@@ -124,8 +124,6 @@ exports.getProductInfo = catchAsyncError(async (req, res, next) => {
     .findById(req.params.id)
     .populate("category");
 
-  console.log(req.userId);
-
   const address = await addressModel.find({
     user: req.userId,
     defaultAddress: true,
@@ -137,11 +135,8 @@ exports.getProductInfo = catchAsyncError(async (req, res, next) => {
   const zipCodeOne = Number(userZipCode) + 5;
   const zipCodeTwo = Number(userZipCode) - 5;
 
-  console.log(zipCodeOne);
-  console.log(zipCodeTwo);
-
   const installers = await installerModel.find({
-    $and: [{ zip: { $gte: zipCodeTwo, $lte: zipCodeOne } }],
+    $and: [{ add_postcode: { $gte: zipCodeTwo, $lte: zipCodeOne } }],
   });
 
   res.status(200).json({ product, installers, userZipCode });
