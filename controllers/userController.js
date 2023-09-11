@@ -281,10 +281,6 @@ exports.getAllClients = catchAsyncError(async (req, res, next) => {
     users = await apiFeature.query.clone();
   }
 
-  console.log(
-    "clients ",
-    users?.map((user) => user?.user)
-  );
   res.status(200).json({
     users: users,
     clientCount,

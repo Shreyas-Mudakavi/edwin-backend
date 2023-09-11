@@ -15,6 +15,54 @@ const userSchema = new mongoose.Schema(
       unique: true,
       validate: [validateEmail, "Please fill a valid email address"],
     },
+    kvk_number: {
+      type: String,
+    },
+    appointmentAgreement: {
+      type: String,
+    },
+    addional_contact_details: {
+      type: String,
+    },
+    extra_contact_details: {
+      type: String,
+    },
+    birthdate: {
+      type: String,
+    },
+    technical_contact_email: {
+      type: String,
+      // required: [true, "Please Enter Your Email"],
+      unique: true,
+      validate: [validateEmail, "Please fill a valid email address"],
+    },
+    technical_contact_name: {
+      type: String,
+    },
+    technical_contact_telephone: {
+      type: String,
+    },
+    street_address: {
+      type: String,
+    },
+    installation_address: {
+      type: String,
+    },
+    invoicing_details: {
+      type: String,
+    },
+    post_code: {
+      type: String,
+    },
+    city: {
+      type: String,
+    },
+    country: {
+      type: String,
+    },
+    extra_info_field: {
+      type: String,
+    },
     password: {
       type: String,
       required: [true, "Please Enter Your Password"],

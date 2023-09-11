@@ -808,16 +808,30 @@ exports.updateStaticContent = catchAsyncError(async (req, res, next) => {
 });
 
 exports.addInstallers = catchAsyncError(async (req, res, next) => {
-  const { name, profilePic, location, zip, email, mobile } = req.body;
+  const {
+    company_name,
+    contact_name,
+    mobile,
+    email,
+    kvk_number,
+    extra_information,
+    add_city,
+    add_street,
+    add_country,
+    add_postcode,
+    extra_info_field,
+    certifications,
+    profilePic,
+  } = req.body;
 
   const unique_id = uuidv4();
   const id = unique_id.slice(0, 6);
 
-  if (mobile.length < 10) {
-    return next(
-      new ErrorHandler("Mobile must be atleast 10 charcters long!", 401)
-    );
-  }
+  // if (mobile.length < 10) {
+  //   return next(
+  //     new ErrorHandler("Mobile must be atleast 10 charcters long!", 401)
+  //   );
+  // }
 
   const oldInstaller = await installerModel.find({ email: email });
   const oldInstallerMobile = await installerModel.find({ mobile: mobile });
@@ -842,12 +856,19 @@ exports.addInstallers = catchAsyncError(async (req, res, next) => {
 
   const installer = await installerModel.create({
     ID: `Edwin - ${id}`,
-    name,
+    company_name,
+    contact_name,
     email,
     mobile,
+    kvk_number,
+    extra_information,
+    add_city,
+    add_street,
+    add_country,
+    add_postcode,
+    extra_info_field,
+    certifications,
     profilePic,
-    location,
-    zip,
   });
 
   const savedInstaller = await installer.save();
@@ -907,14 +928,38 @@ exports.deleteInstaller = catchAsyncError(async (req, res, next) => {
 });
 
 exports.addIntermediary = catchAsyncError(async (req, res, next) => {
-  const { firstname, lastname, mobile_no, email, password } = req.body;
-
-  const intermediary = await userModel.create({
-    email,
-    password,
+  const {
     firstname,
     lastname,
+    kvk_number,
+    aanstellingovereenkomst,
+    addional_contact_details,
+    street_address,
+    post_code,
+    city,
+    country,
+    extra_contact_details,
+    extra_info_field,
     mobile_no,
+    email,
+    password,
+  } = req.body;
+
+  const intermediary = await userModel.create({
+    firstname,
+    lastname,
+    kvk_number,
+    appointmentAgreement: aanstellingovereenkomst,
+    addional_contact_details,
+    street_address,
+    post_code,
+    city,
+    country,
+    extra_contact_details,
+    extra_info_field,
+    mobile_no,
+    email,
+    password,
     role: "intermediary",
   });
 
@@ -956,8 +1001,6 @@ exports.getIntermediary = catchAsyncError(async (req, res, next) => {
     .findOne({ intermediary })
     .populate("user");
 
-  console.log(intermediaryClients);
-
   if (!intermediary) {
     return next(new ErrorHandler("No intermediary found!", 404));
   }
@@ -968,13 +1011,43 @@ exports.getIntermediary = catchAsyncError(async (req, res, next) => {
 });
 
 exports.updateIntermediary = catchAsyncError(async (req, res, next) => {
-  const { firstname, lastname, mobile_no, email, password } = req.body;
+  const {
+    firstname,
+    lastname,
+    kvk_number,
+    aanstellingovereenkomst,
+    addional_contact_details,
+    company_street_address,
+    company_post_code,
+    company_city,
+    company_country,
+    extra_contact_details,
+    extra_info_field,
+    mobile_no,
+    email,
+    password,
+  } = req.body;
 
   const encryptPw = await bcrypt.hash(password, 11);
 
   const intermediary = await userModel.findByIdAndUpdate(
     req.params.id,
-    { email, password: encryptPw, firstname, lastname, mobile_no },
+    {
+      firstname,
+      lastname,
+      kvk_number,
+      aanstellingovereenkomst,
+      addional_contact_details,
+      company_street_address,
+      company_post_code,
+      company_city,
+      company_country,
+      extra_contact_details,
+      extra_info_field,
+      mobile_no,
+      email,
+      password: encryptPw,
+    },
     { new: true, runValidators: true }
   );
 
@@ -983,8 +1056,6 @@ exports.updateIntermediary = catchAsyncError(async (req, res, next) => {
 
 exports.deleteIntermediary = catchAsyncError(async (req, res, next) => {
   const intermediary = await userModel.findById(req.params.id);
-
-  console.log("interme del ", intermediary);
 
   const cart = await cartModel.findOne({ user: intermediary?._id });
   if (cart) {

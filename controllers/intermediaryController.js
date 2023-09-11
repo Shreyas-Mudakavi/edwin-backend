@@ -4,14 +4,44 @@ const catchAsyncError = require("../utils/catchAsyncError");
 const bcrypt = require("bcryptjs");
 
 exports.addIntermediaryClient = catchAsyncError(async (req, res, next) => {
-  const { firstname, lastname, mobile_no, email, password } = req.body;
-
-  const client = await userModel.create({
-    email,
-    password,
+  const {
     firstname,
     lastname,
+    email,
     mobile_no,
+    birthdate,
+    technical_contact_email,
+    technical_contact_name,
+    technical_contact_telephone,
+    street_address,
+    post_code,
+    city,
+    country,
+    extra_contact_details,
+    extra_info_field,
+    invoicing_details,
+    installation_address,
+    password,
+  } = req.body;
+
+  const client = await userModel.create({
+    firstname,
+    lastname,
+    email,
+    mobile_no,
+    birthdate,
+    technical_contact_email,
+    technical_contact_name,
+    technical_contact_telephone,
+    street_address,
+    post_code,
+    city,
+    country,
+    extra_contact_details,
+    extra_info_field,
+    invoicing_details,
+    installation_address,
+    password,
   });
 
   const savedIntermediaryClient = await client.save();
@@ -22,14 +52,16 @@ exports.addIntermediaryClient = catchAsyncError(async (req, res, next) => {
 
   if (alreadyIntermediartClient) {
     console.log("already ");
-    await intermediaryClientModel.updateOne({
-      $push: {
-        user: savedIntermediaryClient._id,
-      },
-    });
+    await intermediaryClientModel.updateOne(
+      { intermediary: req.userId },
+      {
+        $push: {
+          user: savedIntermediaryClient._id,
+        },
+      }
+    );
     return res.status(200).json({ msg: "Client added!" });
   } else {
-    console.log("no already ");
     const intermediaryClient = await intermediaryClientModel.create({
       intermediary: req.userId,
       user: savedIntermediaryClient._id,
@@ -41,13 +73,49 @@ exports.addIntermediaryClient = catchAsyncError(async (req, res, next) => {
 });
 
 exports.updateIntermediaryClient = catchAsyncError(async (req, res, next) => {
-  const { firstname, lastname, mobile_no, email, password } = req.body;
+  const {
+    firstname,
+    lastname,
+    email,
+    mobile_no,
+    birthdate,
+    technical_contact_email,
+    technical_contact_name,
+    technical_contact_telephone,
+    street_address,
+    post_code,
+    city,
+    country,
+    extra_contact_details,
+    extra_info_field,
+    invoicing_details,
+    installation_address,
+    password,
+  } = req.body;
 
   const encryptPw = await bcrypt.hash(password, 11);
 
   const intermediaryClient = await userModel.findByIdAndUpdate(
     req.params.id,
-    { email, password: encryptPw, firstname, lastname, mobile_no },
+    {
+      firstname,
+      lastname,
+      email,
+      mobile_no,
+      birthdate,
+      technical_contact_email,
+      technical_contact_name,
+      technical_contact_telephone,
+      street_address,
+      post_code,
+      city,
+      country,
+      extra_contact_details,
+      extra_info_field,
+      invoicing_details,
+      installation_address,
+      password: encryptPw,
+    },
     { new: true, runValidators: true }
   );
 
