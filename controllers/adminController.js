@@ -814,20 +814,22 @@ exports.addInstallers = catchAsyncError(async (req, res, next) => {
   const id = unique_id.slice(0, 6);
 
   if (mobile.length < 10) {
-    return next(ErrorHandler("Mobile must be atleast 10 charcters long!", 401));
+    return next(
+      new ErrorHandler("Mobile must be atleast 10 charcters long!", 401)
+    );
   }
 
   const oldInstaller = await installerModel.find({ email: email });
   const oldInstallerMobile = await installerModel.find({ mobile: mobile });
   if (oldInstaller) {
     return next(
-      ErrorHandler("Installer already exists with the given email.", 409)
+      new ErrorHandler("Installer already exists with the given email.", 409)
     );
   }
 
   if (oldInstallerMobile) {
     return next(
-      ErrorHandler(
+      new ErrorHandler(
         "Installer already exists with the given mobile number.",
         409
       )
@@ -870,7 +872,7 @@ exports.getInstallers = catchAsyncError(async (req, res, next) => {
   // const installers = await installerModel.find();
 
   if (!installers) {
-    return next(ErrorHandler("No installers found!", 404));
+    return next(new ErrorHandler("No installers found!", 404));
   }
 
   res.status(200).json(installers);
@@ -880,7 +882,7 @@ exports.getInstaller = catchAsyncError(async (req, res, next) => {
   const installer = await installerModel.find({ _id: req.params.id });
 
   if (!installer) {
-    return next(ErrorHandler("No installer found!", 404));
+    return next(new ErrorHandler("No installer found!", 404));
   }
 
   res.status(200).json(installer);
@@ -938,7 +940,7 @@ exports.getAllIntermediaries = catchAsyncError(async (req, res, next) => {
   // const intermediaries = await userModel.find({ role: "intermediary" });
 
   if (!intermediaries) {
-    return next(ErrorHandler("No intermediaries found!", 404));
+    return next(new ErrorHandler("No intermediaries found!", 404));
   }
 
   res.status(200).json(intermediaries);
@@ -957,7 +959,7 @@ exports.getIntermediary = catchAsyncError(async (req, res, next) => {
   console.log(intermediaryClients);
 
   if (!intermediary) {
-    return next(ErrorHandler("No intermediary found!", 404));
+    return next(new ErrorHandler("No intermediary found!", 404));
   }
 
   res
@@ -1031,7 +1033,7 @@ exports.getAllVendors = catchAsyncError(async (req, res, next) => {
   // const vendors = await userModel.find({ role: "intermediary" });
 
   if (!vendors) {
-    return next(ErrorHandler("No vendors found!", 404));
+    return next(new ErrorHandler("No vendors found!", 404));
   }
 
   res.status(200).json({
@@ -1047,7 +1049,7 @@ exports.getVendor = catchAsyncError(async (req, res, next) => {
   });
 
   if (!vendor) {
-    return next(ErrorHandler("No vendor found!", 404));
+    return next(new ErrorHandler("No vendor found!", 404));
   }
 
   res.status(200).json({ vendor: vendor });
@@ -1069,7 +1071,7 @@ exports.deleteVendor = catchAsyncError(async (req, res, next) => {
   const vendor = await venderModel.findById(req.params.id);
 
   if (!vendor) {
-    return next(ErrorHandler("Vendor does not exists!", 404));
+    return next(new ErrorHandler("Vendor does not exists!", 404));
   }
 
   await vendor.remove();
