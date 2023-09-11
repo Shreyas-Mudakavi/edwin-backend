@@ -821,13 +821,13 @@ exports.addInstallers = catchAsyncError(async (req, res, next) => {
 
   const oldInstaller = await installerModel.find({ email: email });
   const oldInstallerMobile = await installerModel.find({ mobile: mobile });
-  if (oldInstaller) {
+  if (oldInstaller.length > 0) {
     return next(
       new ErrorHandler("Installer already exists with the given email.", 409)
     );
   }
 
-  if (oldInstallerMobile) {
+  if (oldInstallerMobile.length > 0) {
     return next(
       new ErrorHandler(
         "Installer already exists with the given mobile number.",
