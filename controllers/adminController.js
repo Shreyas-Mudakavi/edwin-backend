@@ -836,9 +836,9 @@ exports.addInstallers = catchAsyncError(async (req, res, next) => {
     );
   }
 
-  if (mobile.length < 10) {
-    return next(ErrorHandler("Mobile must be atleast 10 charcters long!", 401));
-  }
+  // if (mobile.length < 10) {
+  //   return next(ErrorHandler("Mobile must be atleast 10 charcters long!", 401));
+  // }
 
   const installer = await installerModel.create({
     ID: `Edwin - ${id}`,
