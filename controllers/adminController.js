@@ -969,12 +969,17 @@ exports.addIntermediary = catchAsyncError(async (req, res, next) => {
 });
 
 exports.getAllIntermediaries = catchAsyncError(async (req, res, next) => {
+  const intermediaryCount = await userModel.countDocuments({
+    role: "intermediary",
+  });
+
   const apiFeature = new APIFeatures(
     userModel.find({ role: "intermediary" }).sort({ createdAt: -1 }),
     req.query
   ).search("firstname");
 
   let intermediaries = await apiFeature.query;
+  let filteredIntermediaryCount = intermediaries.length;
 
   if (req.query.resultPerPage && req.query.currentPage) {
     apiFeature.pagination();
@@ -988,7 +993,9 @@ exports.getAllIntermediaries = catchAsyncError(async (req, res, next) => {
     return next(new ErrorHandler("No intermediaries found!", 404));
   }
 
-  res.status(200).json(intermediaries);
+  res
+    .status(200)
+    .json({ intermediaries, filteredIntermediaryCount, intermediaryCount });
 });
 
 exports.getIntermediary = catchAsyncError(async (req, res, next) => {

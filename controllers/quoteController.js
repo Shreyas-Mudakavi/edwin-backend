@@ -148,19 +148,32 @@ exports.getClientQuotes = catchAsyncError(async (req, res, next) => {
 
 exports.getMyQuotesReq = catchAsyncError(async (req, res, next) => {
   const intermediary = await userModel.findOne({
-    _id: req.userId,
+    _id: req.user,
   });
 
-  const quotes = await quoteModel.find({
+  const myQuotesCount = await quoteModel.countDocuments({
     user: intermediary._id,
-    // user: intermediary.map((user) => user.user),
   });
 
-  if (!quotes) {
-    return next(ErrorHandler("No quotes found!", 404));
+  const apiFeature = new APIFeatures(
+    quoteModel.find({ user: intermediary._id }).sort({ createdAt: -1 }),
+    req.query
+  ).search("firstname");
+
+  let quotes = await apiFeature.query;
+  let filteredQuotesCount = quotes.length;
+
+  if (req.query.resultPerPage && req.query.currentPage) {
+    apiFeature.pagination();
+
+    quotes = await apiFeature.query.clone();
   }
 
-  res.status(200).json({ quotes: quotes });
+  if (!quotes) {
+    return next(new ErrorHandler("No quotes found!", 404));
+  }
+
+  res.status(200).json({ quotes, myQuotesCount, filteredQuotesCount });
 });
 
 exports.getQuote = catchAsyncError(async (req, res, next) => {
