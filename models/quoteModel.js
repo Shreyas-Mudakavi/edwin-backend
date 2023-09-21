@@ -6,22 +6,22 @@ const quoteSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
-    firstname: {
-      type: String,
-      required: [true, "Please enter firstname."],
-    },
-    lastname: {
-      type: String,
-      required: [true, "Please enter lastname."],
-    },
-    email: {
-      type: String,
-      required: [true, "Please enter email."],
-    },
-    mobile_no: {
-      type: String,
-      required: [true, "Please enter your mobile number."],
-    },
+    // firstname: {
+    //   type: String,
+    //   required: [true, "Please enter firstname."],
+    // },
+    // lastname: {
+    //   type: String,
+    //   required: [true, "Please enter lastname."],
+    // },
+    // email: {
+    //   type: String,
+    //   required: [true, "Please enter email."],
+    // },
+    // mobile_no: {
+    //   type: String,
+    //   required: [true, "Please enter your mobile number."],
+    // },
     role: {
       type: String,
       required: true,

@@ -9,16 +9,12 @@ const sendMail = require("../utils/sendMail");
 const sendNotification = require("../utils/sendNotification");
 
 exports.addQuote = catchAsyncError(async (req, res, next) => {
-  const { firstname, lastname, email, mobile_no, details, quoteDoc } = req.body;
+  const { details, quoteDoc } = req.body;
 
   const user = await userModel.findOne({ _id: req.userId });
 
   const addQuote = await quoteModel.create({
     user: req.userId,
-    firstname,
-    lastname,
-    email,
-    mobile_no,
     role: user.role,
     details,
     quoteDoc,
