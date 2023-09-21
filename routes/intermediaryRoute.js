@@ -32,7 +32,7 @@ const router = express.Router();
 
 router.post("/login", intermediaryLogin);
 
-router.get("/statistics/:time", auth, isIntermediary, getStatistics);
+router.get("/statistics", auth, isIntermediary, getStatistics);
 
 router.post("/client/add", auth, isIntermediary, addIntermediaryClient);
 router.get("/user/all", auth, isIntermediary, getAllClients);

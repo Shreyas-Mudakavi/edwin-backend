@@ -22,6 +22,10 @@ const quoteSchema = new mongoose.Schema(
       type: String,
       required: [true, "Please enter your mobile number."],
     },
+    role: {
+      type: String,
+      required: true,
+    },
     details: {
       type: String,
       required: [true, "Please enter your service requirement details."],

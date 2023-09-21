@@ -11,7 +11,7 @@ const sendNotification = require("../utils/sendNotification");
 exports.addQuote = catchAsyncError(async (req, res, next) => {
   const { firstname, lastname, email, mobile_no, details, quoteDoc } = req.body;
 
-  console.log(req.body);
+  const user = await userModel.findOne({ _id: req.userId });
 
   const addQuote = await quoteModel.create({
     user: req.userId,
@@ -19,6 +19,7 @@ exports.addQuote = catchAsyncError(async (req, res, next) => {
     lastname,
     email,
     mobile_no,
+    role: user.role,
     details,
     quoteDoc,
   });
@@ -49,6 +50,43 @@ exports.getQuotes = catchAsyncError(async (req, res, next) => {
   // res.status(200).json({ users, userCount, filteredUserCount });
 
   const quoteCount = await quoteModel.countDocuments();
+
+  let query = {};
+  if (req.query.role) {
+    query = {
+      role: {
+        $regex: req.query.role,
+        $options: "i",
+      },
+    };
+  }
+  if (req.query.role !== "all") {
+    query.role = req.query.role;
+
+    console.log("req.query", query);
+
+    const apiFeature = new APIFeatures(
+      quoteModel.find(query).sort({ createdAt: -1 }).populate("user"),
+      req.query
+    );
+    // const apiFeature = new APIFeatures(
+    //   quoteModel.find().sort({ createdAt: -1 }).populate("user"),
+    //   req.query
+    // );
+
+    let quotes = await apiFeature.query;
+    // console.log("orders", orders);
+    let filteredQuoteCount = quotes.length;
+
+    apiFeature.pagination();
+    quotes = await apiFeature.query.clone();
+
+    return res.status(200).json({
+      quotes: quotes,
+      filteredQuoteCount: filteredQuoteCount,
+      quoteCount: quoteCount,
+    });
+  }
 
   const apiFeature = new APIFeatures(
     quoteModel.find().populate("user").sort({ createdAt: -1 }),
@@ -81,8 +119,6 @@ exports.getClientQuotes = catchAsyncError(async (req, res, next) => {
     })
     .populate("user");
 
-  console.log("intermediaryClient ", intermediaryClient);
-
   // intermediaryClient.forEach(async (client) => {
   const clientQuotes = await quoteModel.aggregate([
     {
@@ -109,8 +145,6 @@ exports.getClientQuotes = catchAsyncError(async (req, res, next) => {
       },
     },
   ]);
-
-  console.log("aggre ", clientQuotes);
 
   // const clientQuotesArrya = aggregateLoop.map((clientQuote) => {
   //   return {
