@@ -159,22 +159,46 @@ exports.adminLogin = catchAsyncError(async (req, res, next) => {
 
 exports.getAllUsers = catchAsyncError(async (req, res, next) => {
   const userCount = await userModel.countDocuments();
-  console.log("userCount", userCount);
+
+  let query = {};
+  if (req.query.role) {
+    query = {
+      role: {
+        $regex: req.query.role,
+        $options: "i",
+      },
+    };
+  }
+  if (req.query.role !== "all") {
+    query.role = req.query.role;
+
+    const apiFeature = new APIFeatures(
+      userModel.find(query).sort({ createdAt: -1 }),
+      req.query
+    );
+
+    let users = await apiFeature.query;
+    let filteredUserCount = users.length;
+
+    apiFeature.pagination();
+
+    users = await apiFeature.query.clone();
+
+    return res.status(200).json({ users, userCount, filteredUserCount });
+  }
+
   const apiFeature = new APIFeatures(
     userModel.find().sort({ createdAt: -1 }),
     req.query
   ).search("firstname");
 
   let users = await apiFeature.query;
-  console.log("users", users);
   let filteredUserCount = users.length;
   if (req.query.resultPerPage && req.query.currentPage) {
     apiFeature.pagination();
 
-    console.log("filteredUserCount", filteredUserCount);
     users = await apiFeature.query.clone();
   }
-  console.log("users", users);
   res.status(200).json({ users, userCount, filteredUserCount });
 });
 
@@ -222,7 +246,6 @@ exports.updateUser = catchAsyncError(async (req, res, next) => {
 
 exports.getUser = catchAsyncError(async (req, res, next) => {
   const { id } = req.params;
-  console.log("get user", id);
   const user = await userModel.findById(id);
 
   if (!user) return next(new ErrorHandler("User not found.", 404));
@@ -239,9 +262,6 @@ exports.intermediaryLogin = catchAsyncError(async (req, res, next) => {
 
   const user = await userModel.findOne({ email }).select("+password");
   if (!user) return next(new ErrorHandler("Invalid email or password", 401));
-
-  console.log("user ", user);
-  console.log("role ", user.role);
 
   if (user.role !== "intermediary")
     return next(new ErrorHandler("Unauthorized user login.", 401));
