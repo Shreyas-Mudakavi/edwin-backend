@@ -59,8 +59,6 @@ exports.getQuotes = catchAsyncError(async (req, res, next) => {
   if (req.query.role !== "all") {
     query.role = req.query.role;
 
-    console.log("req.query", query);
-
     const apiFeature = new APIFeatures(
       quoteModel.find(query).sort({ createdAt: -1 }).populate("user"),
       req.query
