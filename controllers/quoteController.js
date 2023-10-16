@@ -25,6 +25,26 @@ exports.addQuote = catchAsyncError(async (req, res, next) => {
   res.status(200).json({ msg: "Request submitted!" });
 });
 
+exports.addClientQuote = catchAsyncError(async (req, res, next) => {
+  const { email, details, quoteDoc } = req.body;
+
+  const user = await userModel.findOne({ email: email });
+  if (!user) {
+    return next(new ErrorHandler("No user found with that email!", 404));
+  }
+
+  const addQuote = await quoteModel.create({
+    user: user._id,
+    role: user.role,
+    details,
+    quoteDoc,
+  });
+
+  const savedQuote = await addQuote.save();
+
+  res.status(200).json({ msg: "Request submitted!", success: true });
+});
+
 exports.getQuotes = catchAsyncError(async (req, res, next) => {
   // const userCount = await userModel.countDocuments();
   // console.log("userCount", userCount);
@@ -114,64 +134,84 @@ exports.getClientQuotes = catchAsyncError(async (req, res, next) => {
     .populate("user");
 
   // intermediaryClient.forEach(async (client) => {
-  const clientQuotes = await quoteModel.aggregate([
-    {
-      $match: {
-        user: { $in: intermediaryClient.user },
-      },
-    },
-    {
-      $group: {
-        _id: {
-          details: "$details",
-          firstname: "$firstname",
-          lastname: "$lastname",
-          email: "$email",
-          mobile_no: "$mobile_no",
-          quoteStatus: "$quoteStatus",
-          paymentStatus: "$paymentStatus",
-          createdAt: "$createdAt",
-          updatedAt: "$updatedAt",
-          _id: "$_id",
-        },
-        // user: { user: intermediaryClient[0].user._id },
-        // details: { details: "$details" },
-      },
-    },
-  ]);
+  // const clientQuotes = await quoteModel.aggregate([
+  //   {
+  //     $match: {
+  //       user: { $in: intermediaryClient.user },
+  //     },
+  //   },
+  //   // { $unwind: "$user" },
+  //   // {
+  //   //   $lookup: {
+  //   //     localField: "user",
+  //   //     foreignField: "id",
+  //   //     as: "user",
+  //   //     pipeline: [
+  //   //       {
+  //   //         $documents: [
+  //   //           {
+  //   //             id: intermediaryClient.user,
+  //   //           },
+  //   //         ],
+  //   //       },
+  //   //     ],
+  //   //   },
+  //   // },
+  //   {
+  //     $group: {
+  //       _id: {
+  //         details: "$details",
+  //         // user: "$userdetails.firstname",
+  //         // firstname: "$user.firstname",
+  //         // lastname: "$user.lastname",
+  //         // email: "$user.email",
+  //         // mobile_no: "$user.mobile_no",
+  //         quoteStatus: "$quoteStatus",
+  //         paymentStatus: "$paymentStatus",
+  //         createdAt: "$createdAt",
+  //         updatedAt: "$updatedAt",
+  //         _id: "$_id",
+  //       },
+  //       // user: { user: intermediaryClient[0].user._id },
+  //       // details: { details: "$details" },
+  //     },
+  //   },
+  //   {
+  //     $lookup: {
+  //       from: "User",
+  //       localField: "user",
+  //       foreignField: "_id",
+  //       as: "userdetails",
+  //     },
+  //   },
+  // ]);
 
-  // const clientQuotesArrya = aggregateLoop.map((clientQuote) => {
-  //   return {
-  //     firstname: clientQuote._id.firstname,
-  //     lastname: clientQuote._id.lastname,
-  //     details: clientQuote._id.details,
-  //   };
-  // });
+  // const lookup = await quoteModel.aggregate([
+  //   {
+  //     $lookup: {
+  //       from: "User",
+  //       // localField: "user",
+  //       // foreignField: "_id",
+  //       let: { curr_user: "$user" },
+  //       pipeline: [
+  //         {
+  //           $match: {
+  //             $expr: { $eq: ["$$curr_user", "$_id"] },
+  //           },
+  //         },
+  //       ],
+  //       as: "userdetails",
+  //     },
+  //   },
+  // ]);
 
-  // console.log("aggre res ", clientQuotesArrya);
+  const clientQuotes = await quoteModel
+    .find({
+      user: { $in: intermediaryClient.user },
+    })
+    .populate("user");
+  console.log("clientQuotes", clientQuotes);
   res.status(200).json({ quotes: clientQuotes });
-
-  // let quotes = [];
-  // const newquo = await intermediaryClient.forEach(
-  //   async (intermediaryClient) => {
-  //     const allQuotes = await quoteModel.find({
-  //       user: intermediaryClient.user,
-  //     });
-
-  //     if (!allQuotes) {
-  //       return next(ErrorHandler("No quotes found!", 404));
-  //     }
-
-  //     console.log(allQuotes);
-  //     await quotes.push(allQuotes);
-  //     return allQuotes;
-
-  //     // res.status(200).json({ quotes: { quotes } });
-  //   }
-  // );
-
-  // console.log("newquo ", newquo);
-  // console.log("quotes ", quotes);
 });
 
 exports.getMyQuotesReq = catchAsyncError(async (req, res, next) => {
@@ -184,7 +224,10 @@ exports.getMyQuotesReq = catchAsyncError(async (req, res, next) => {
   });
 
   const apiFeature = new APIFeatures(
-    quoteModel.find({ user: intermediary._id }).sort({ createdAt: -1 }),
+    quoteModel
+      .find({ user: intermediary._id })
+      .populate("user")
+      .sort({ createdAt: -1 }),
     req.query
   ).search("firstname");
 
@@ -205,7 +248,9 @@ exports.getMyQuotesReq = catchAsyncError(async (req, res, next) => {
 });
 
 exports.getQuote = catchAsyncError(async (req, res, next) => {
-  const quote = await quoteModel.findOne({ _id: req.params.id });
+  const quote = await quoteModel
+    .findOne({ _id: req.params.id })
+    .populate("user");
 
   if (!quote) {
     return next(ErrorHandler("No quote found!", 404));

@@ -139,30 +139,33 @@ exports.getStatistics = catchAsyncError(async (req, res, next) => {
   });
 
   const intermediaryClients = await intermediaryClientModel.findOne({
-    intermediary: intermediary._id,
+    intermediary: intermediary?._id,
   });
 
-  const clientQuotes = await quoteModel.aggregate([
-    {
-      $match: {
-        user: { $in: intermediaryClients.user },
+  let clientQuotes = [];
+  if (intermediaryClients?.user) {
+    clientQuotes = await quoteModel.aggregate([
+      {
+        $match: {
+          user: { $in: intermediaryClients?.user },
+        },
       },
-    },
-    {
-      $group: {
-        _id: null,
-        total: { $sum: 1 },
+      {
+        $group: {
+          _id: null,
+          total: { $sum: 1 },
+        },
       },
-    },
-  ]);
+    ]);
+  }
 
   const myQuotesCount = await quoteModel.countDocuments({
-    user: intermediary._id,
+    user: intermediary?._id,
   });
 
   res.status(200).json({
-    clients: intermediaryClients.user.length,
-    clientQuotes: clientQuotes.length,
+    clients: intermediaryClients?.user.length,
+    clientQuotes: clientQuotes.length || 0,
     myQuotesCount: myQuotesCount,
   });
 });
