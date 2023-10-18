@@ -39,6 +39,9 @@ const userSchema = new mongoose.Schema(
     technical_contact_name: {
       type: String,
     },
+    technical_contact_name_lastname: {
+      type: String,
+    },
     technical_contact_telephone: {
       type: String,
     },
@@ -79,9 +82,33 @@ const userSchema = new mongoose.Schema(
       required: [true, "Please enter your lastname."],
       maxLength: [30, "Lastname cannot exceed 30 characters"],
     },
+    residence: {
+      type: String,
+    },
     mobile_no: {
       type: String,
       required: [true, "Please enter your mobile no."],
+    },
+    other_mobile: {
+      type: String,
+    },
+    other_email: {
+      type: String,
+    },
+    installation_country: {
+      type: String,
+    },
+    installation_postcode: {
+      type: String,
+    },
+    installation_residence: {
+      type: String,
+    },
+    installation_street: {
+      type: String,
+    },
+    companyname: {
+      type: String,
     },
     role: {
       type: String,
