@@ -95,18 +95,25 @@ const userSchema = new mongoose.Schema(
     other_email: {
       type: String,
     },
-    installation_country: {
-      type: String,
-    },
-    installation_postcode: {
-      type: String,
-    },
-    installation_residence: {
-      type: String,
-    },
-    installation_street: {
-      type: String,
-    },
+    installationObject: [
+      {
+        id: {
+          type: String,
+        },
+        installation_country: {
+          type: String,
+        },
+        installation_postcode: {
+          type: String,
+        },
+        installation_residence: {
+          type: String,
+        },
+        installation_street: {
+          type: String,
+        },
+      },
+    ],
     companyname: {
       type: String,
     },

@@ -3,6 +3,7 @@ const quoteModel = require("../models/quoteModel");
 const userModel = require("../models/userModel");
 const catchAsyncError = require("../utils/catchAsyncError");
 const bcrypt = require("bcryptjs");
+const { v4: uuid } = require("uuid");
 
 exports.addIntermediaryClient = catchAsyncError(async (req, res, next) => {
   const {
@@ -31,16 +32,28 @@ exports.addIntermediaryClient = catchAsyncError(async (req, res, next) => {
     password,
   } = req.body;
 
+  const unique_id = uuid();
+  const installationObject = [
+    {
+      id: unique_id.slice(0, 6),
+      installation_country,
+      installation_postcode,
+      installation_residence,
+      installation_street,
+    },
+  ];
+
   const client = await userModel.create({
     firstname,
     lastname,
     email,
     mobile_no,
     residence,
-    installation_country,
-    installation_postcode,
-    installation_residence,
-    installation_street,
+    installationObject: installationObject,
+    // installation_country,
+    // installation_postcode,
+    // installation_residence,
+    // installation_street,
     // birthdate,
     technical_contact_email,
     technical_contact_name,
@@ -93,10 +106,11 @@ exports.updateIntermediaryClient = catchAsyncError(async (req, res, next) => {
     mobile_no,
     residence,
     technical_contact_name_lastname,
-    installation_country,
-    installation_postcode,
-    installation_residence,
-    installation_street,
+    installationObject,
+    // installation_country,
+    // installation_postcode,
+    // installation_residence,
+    // installation_street,
     technical_contact_name,
     technical_contact_email,
     technical_contact_telephone,
@@ -105,6 +119,8 @@ exports.updateIntermediaryClient = catchAsyncError(async (req, res, next) => {
     country,
     extra_info_field,
   } = req.body;
+
+  console.log("req.body.installationObject ", req.body.installationObject);
 
   // const encryptPw = await bcrypt.hash(password, 11);
 
@@ -117,10 +133,11 @@ exports.updateIntermediaryClient = catchAsyncError(async (req, res, next) => {
       mobile_no,
       residence,
       technical_contact_name_lastname,
-      installation_country,
-      installation_postcode,
-      installation_residence,
-      installation_street,
+      installationObject,
+      // installation_country,
+      // installation_postcode,
+      // installation_residence,
+      // installation_street,
       technical_contact_name,
       technical_contact_email,
       technical_contact_telephone,
@@ -133,6 +150,7 @@ exports.updateIntermediaryClient = catchAsyncError(async (req, res, next) => {
     { new: true, runValidators: true }
   );
 
+  // res.status(200).json({ msg: "success!" });
   res.status(200).json(intermediaryClient);
 });
 

@@ -379,9 +379,6 @@ exports.quoteResp = catchAsyncError(async (req, res, next) => {
 });
 
 exports.quoteRespIntermediary = catchAsyncError(async (req, res, next) => {
-  console.log(req.user);
-  console.log(req.userRole);
-
   const { response, responseDoc } = req.body;
 
   const quote = await quoteModel.findById(req.params.id);
