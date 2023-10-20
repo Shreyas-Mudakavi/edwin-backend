@@ -318,10 +318,12 @@ exports.getIntermeUser = catchAsyncError(async (req, res, next) => {
     intermediary: req.userId,
   });
 
-  const quotes = await quoteModel.find({
-    user: id,
-    // user: intermediaryClient.user,
-  });
+  const quotes = await quoteModel
+    .find({
+      user: id,
+      // user: intermediaryClient.user,
+    })
+    .populate("user");
 
   res.status(200).json({ user, quotes });
 });
